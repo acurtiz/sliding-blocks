@@ -5,7 +5,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Target for generating executable
 include_directories(include)
-file(GLOB SOURCES "src/*.cc")
+file(GLOB_RECURSE SOURCES "src/*.cc")
+message("Sources are: ${SOURCES}")
 add_executable(SlidingBlocks ${SOURCES} assets/)
 
 # Target for copying assets into build directory.
@@ -26,3 +27,7 @@ find_library(SDL2_IMAGE_LIBRARY
         NAMES SDL2_image
         HINTS /Library/Frameworks)
 target_link_libraries(SlidingBlocks LINK_PUBLIC ${SDL2_IMAGE_LIBRARY})
+
+# Include Boost
+set(BOOST_HEADER_DIRECTORY /Users/alex/Libraries/boost_1_76_0)
+include_directories(${BOOST_HEADER_DIRECTORY})

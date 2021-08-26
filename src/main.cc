@@ -1,6 +1,9 @@
-#include <iostream>
+#include "game/game.h"
 
 int main() {
-  std::cout << "Hello, World!" << std::endl;
+
+  sliding_blocks::Game game = sliding_blocks::Game();
+  game.Run();
   return 0;
+
 }
