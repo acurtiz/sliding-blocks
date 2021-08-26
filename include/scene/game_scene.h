@@ -1,4 +1,5 @@
 #include "scene/scene.h"
+#include "player/player.h"
 
 #ifndef SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
 #define SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
@@ -15,8 +16,10 @@ class GameScene : public Scene {
   void RunSingleIterationLoopBody() override;
 
  private:
+  SDL_Color background_color_ = {0x00, 0x00, 0x00, 0xFF};
   int screen_height_;
   int screen_width_;
+  Player *player_;
 
 };
 

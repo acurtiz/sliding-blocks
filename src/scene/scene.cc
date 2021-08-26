@@ -11,6 +11,14 @@ Scene::~Scene() {
   window_ = nullptr;
 }
 
+void Scene::RunSingleIterationEventHandler(SDL_Event &event) {
+
+  if (event.type == SDL_QUIT) {
+    QuitGlobal();
+  }
+
+}
+
 void Scene::Run() {
 
   RunPreLoop();

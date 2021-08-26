@@ -17,7 +17,7 @@ class Scene {
 
   virtual void RunPreLoop() = 0;
   virtual void RunPostLoop() = 0;
-  virtual void RunSingleIterationEventHandler(SDL_Event &event) = 0;
+  virtual void RunSingleIterationEventHandler(SDL_Event &event);
   virtual void RunSingleIterationLoopBody() = 0;
   void QuitLocal();
   void QuitGlobal();
