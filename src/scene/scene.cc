@@ -1,3 +1,4 @@
+#include <SDL2/SDL.h>
 #include "scene/scene.h"
 
 namespace sliding_blocks {
@@ -42,6 +43,7 @@ void Scene::Run() {
 
     RunSingleIterationLoopBody();
 
+    SDL_Delay(15);
   }
 
   RunPostLoop();

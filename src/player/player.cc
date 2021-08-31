@@ -4,12 +4,10 @@
 namespace sliding_blocks {
 
 Player::Player(SDL_Renderer *renderer, int width, int height, int top_left_x, int top_left_y)
-    : renderer_(renderer),
-      width_(width),
-      height_(height),
+    : Rectangle(top_left_x, top_left_y, width, height),
+      RectangularCollider((Rectangle &) *this),
+      renderer_(renderer),
       velocity_(10),
-      top_left_x_(top_left_x),
-      top_left_y_(top_left_y),
       destination_x_(-1),
       destination_y_(-1),
       distance_(0),
@@ -25,8 +23,6 @@ void Player::HandleEvent(SDL_Event &event) {
     return;
   }
 
-  printf("Handling event!\n");
-
   int mouse_x, mouse_y = 0;
   SDL_GetMouseState(&mouse_x, &mouse_y);
 
@@ -34,24 +30,12 @@ void Player::HandleEvent(SDL_Event &event) {
   destination_y_ = mouse_y;
 
   // Otherwise, calculate distance to destination and set velocities
-  distance_x_ = destination_x_ - top_left_x_;
-  distance_y_ = destination_y_ - top_left_y_;
+  distance_x_ = destination_x_ - GetTopLeftX();
+  distance_y_ = destination_y_ - GetTopLeftY();
   distance_ = sqrt(pow(distance_x_, 2) + pow(distance_y_, 2));
 
   target_angle_ = atan2(distance_y_, distance_x_) * 180 / M_PI + 180;
-  printf("Target angle: %f\n", target_angle_);
 
-}
-
-void Player::ProcessFrame() {
-
-  bool should_move_straight = false;
-
-  if (should_move_straight) {
-    MoveCharacterStraight();
-  } else {
-    MoveCharacterSlide();
-  }
 }
 
 void Player::MoveCharacterStraight() {
@@ -62,11 +46,17 @@ void Player::MoveCharacterStraight() {
   }
 
   // Once close enough to the destination, we stop moving
-  if (abs(destination_x_ - top_left_x_) > 4) {
-    top_left_x_ = (int) (top_left_x_ + velocity_ * (distance_x_ / distance_));
+  if (abs(destination_x_ - GetTopLeftX()) > 4) {
+    SetTopLeftPosition(
+        (int) (GetTopLeftX() + velocity_ * (distance_x_ / distance_)),
+        GetTopLeftY()
+    );
   }
-  if (abs(destination_y_ - top_left_y_) > 4) {
-    top_left_y_ = (int) (top_left_y_ + velocity_ * (distance_y_ / distance_));
+  if (abs(destination_y_ - GetTopLeftY()) > 4) {
+    SetTopLeftPosition(
+        GetTopLeftX(),
+        (int) (GetTopLeftY() + velocity_ * (distance_y_ / distance_))
+    );
   }
 
 }
@@ -95,8 +85,10 @@ void Player::MoveCharacterSlide() {
   }
 
   // Update position based on angle
-  top_left_y_ = (int) (top_left_y_ + velocity_ * sin((player_angle_ - 180) * M_PI / 180));
-  top_left_x_ = (int) (top_left_x_ + velocity_ * cos((player_angle_ - 180) * M_PI / 180));
+  SetTopLeftPosition(
+      (int) (GetTopLeftX() + velocity_ * cos((player_angle_ - 180) * M_PI / 180)),
+      (int) (GetTopLeftY() + velocity_ * sin((player_angle_ - 180) * M_PI / 180))
+  );
 
 }
 
@@ -108,25 +100,11 @@ void Player::Render() {
 
   // Draw the object
   SDL_SetRenderDrawColor(renderer_, color_.r, color_.g, color_.b, color_.a);
-  SDL_Rect rect = {top_left_x_, top_left_y_, width_, height_};
+  SDL_Rect rect = {GetTopLeftX(), GetTopLeftY(), GetWidth(), GetHeight()};
   SDL_RenderFillRect(renderer_, &rect);
-  SDL_RenderPresent(renderer_);
 
   // Restore prior color
   SDL_SetRenderDrawColor(renderer_, previous_color.r, previous_color.g, previous_color.b, previous_color.a);
-}
-
-void Player::SetTopLeftPosition(int x, int y) {
-  top_left_x_ = x;
-  top_left_y_ = y;
-}
-
-int Player::GetTopLeftY() const {
-  return top_left_y_;
-}
-
-int Player::GetTopLeftX() const {
-  return top_left_x_;
 }
 
 }

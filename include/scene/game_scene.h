@@ -1,5 +1,6 @@
 #include "scene/scene.h"
 #include "player/player.h"
+#include "environment/surface.h"
 
 #ifndef SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
 #define SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
@@ -20,6 +21,7 @@ class GameScene : public Scene {
   int screen_height_;
   int screen_width_;
   Player *player_;
+  Surface *test_wall_;
 
 };
 
