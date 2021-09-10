@@ -23,11 +23,11 @@ SurfaceType Surface::GetType() {
 SDL_Color Surface::GetColor() {
   switch (surface_type_) {
     case SLICK_FLOOR:
-      return {0, 0, 0xFF, 0xFF}; // blue
+      return {0x00, 0xFF, 0x00, 0xFF}; // green
     case NORMAL_FLOOR:
-      return {0xFF, 0xFF, 0, 0xFF}; // yellow
+      return {0xFF, 0xFF, 0xFF, 0xFF}; // white
     case WALL:
-      return {0x80, 0x80, 0x80, 0xFF}; // grey
+      return {0xFF, 0x00, 0x00, 0xFF}; // red
     default:
       throw std::runtime_error(boost::str(boost::format("Invalid surface type: %1%\n") % surface_type_));
   }

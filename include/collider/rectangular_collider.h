@@ -12,13 +12,29 @@ class RectangularCollider {
   // We rely on and assume each object in our game can be represented by a single rectangle; as such, as simply
   // pass in the reference to the actual to-be-rendered rectangle, and then we don't need to continuously update it
   // in the actual object and in the collider
-  RectangularCollider(Rectangle &rectangle);
+  explicit RectangularCollider(Rectangle &rectangle);
   bool IsCollision(RectangularCollider &other);
+
+  template<typename InputIterator>
+  bool IsCollision(InputIterator begin, InputIterator end);
 
  private:
   Rectangle &rectangle_;
 
 };
+
+template<typename InputIterator>
+bool RectangularCollider::IsCollision(InputIterator begin, InputIterator end) {
+
+  for (InputIterator it = begin; it != end; ++it) {
+    RectangularCollider *other = (RectangularCollider *) *it;
+    if (IsCollision(*other)) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 }
 

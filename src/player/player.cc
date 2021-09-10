@@ -7,14 +7,15 @@ Player::Player(SDL_Renderer *renderer, int width, int height, int top_left_x, in
     : Rectangle(top_left_x, top_left_y, width, height),
       RectangularCollider((Rectangle &) *this),
       renderer_(renderer),
-      velocity_(10),
+      velocity_(5),
       destination_x_(-1),
       destination_y_(-1),
       distance_(0),
       distance_x_(0),
       distance_y_(0),
       player_angle_(0),
-      target_angle_(0) {
+      target_angle_(0),
+      color_({0x00, 0x00, 0x00, 0xFF}) {
 }
 
 void Player::HandleEvent(SDL_Event &event) {

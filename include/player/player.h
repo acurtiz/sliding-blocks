@@ -19,7 +19,7 @@ class Player : public Rectangle, public RectangularCollider {
  private:
 
   SDL_Renderer *renderer_;
-  SDL_Color color_ = {0xFF, 0xFF, 0xFF, 0xFF};
+  SDL_Color color_;
 
   int destination_x_;
   int destination_y_;

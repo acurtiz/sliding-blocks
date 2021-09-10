@@ -1,3 +1,4 @@
+#include <vector>
 #include "scene/scene.h"
 #include "player/player.h"
 #include "environment/surface.h"
@@ -21,7 +22,9 @@ class GameScene : public Scene {
   int screen_height_;
   int screen_width_;
   Player *player_;
-  Surface *test_wall_;
+  std::vector<Surface *> walls_;
+  std::vector<Surface *> slick_floors_;
+  std::vector<Surface *> walkable_floors_;
 
 };
 

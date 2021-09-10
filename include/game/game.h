@@ -13,8 +13,8 @@ class Game {
   void Run();
 
  private:
-  const int screen_width_ = 800;
-  const int screen_height_ = 600;
+  const int screen_width_ = 500;
+  const int screen_height_ = 500;
   SDL_Window *window_ = nullptr;
   SDL_Renderer *renderer_ = nullptr;
   bool global_quit_ = false;

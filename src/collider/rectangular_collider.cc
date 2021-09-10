@@ -1,4 +1,3 @@
-#include <cstdio>
 #include "collider/rectangular_collider.h"
 
 namespace sliding_blocks {
