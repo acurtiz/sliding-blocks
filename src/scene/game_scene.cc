@@ -1,6 +1,9 @@
+#include <fstream>
+#include <sstream>
 #include "scene/game_scene.h"
 #include "player/player.h"
 #include "environment/surface.h"
+#include "level_loader/rapid_json_loader.h"
 
 namespace sliding_blocks {
 
@@ -18,17 +21,14 @@ GameScene::GameScene(SDL_Renderer *renderer,
 
 void GameScene::RunPreLoop() {
 
+  RapidJsonLoader level_loader("assets/level/1.json", renderer_);
+
+  walls_ = level_loader.GetWalls();
+  walkable_floors_ = level_loader.GetWalkableFloors();
+  slick_floors_ = level_loader.GetSlickFloors();
+
   player_ = new Player(renderer_, 10, 10, 10, 10);
 
-  walls_.push_back(new Surface(170, 0, 330, 100, renderer_, WALL));
-  walls_.push_back(new Surface(0, 100, 100, 380, renderer_, WALL));
-  walls_.push_back(new Surface(0, 460, 500, 20, renderer_, WALL));
-  walls_.push_back(new Surface(480, 0, 20, 480, renderer_, WALL));
-
-  slick_floors_.push_back(new Surface(0, 100, 500, 380, renderer_, SLICK_FLOOR));
-
-  walkable_floors_.push_back(new Surface(0, 0, screen_width_, screen_height_, renderer_, NORMAL_FLOOR));
-  walkable_floors_.push_back(new Surface(50, 10, 50, 50, renderer_, NORMAL_FLOOR));
 }
 
 void GameScene::RunPostLoop() {

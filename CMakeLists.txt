@@ -5,6 +5,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Target for generating executable
 include_directories(include)
+include_directories(external/include)
 file(GLOB_RECURSE SOURCES "src/*.cc")
 message("Sources are: ${SOURCES}")
 add_executable(SlidingBlocks ${SOURCES} assets/)
