@@ -46,19 +46,17 @@ void Player::MoveCharacterStraight() {
     return;
   }
 
-  // Once close enough to the destination, we stop moving
-  if (abs(destination_x_ - GetTopLeftX()) > 4) {
-    SetTopLeftPosition(
-        (int) (GetTopLeftX() + velocity_ * (distance_x_ / distance_)),
-        GetTopLeftY()
-    );
-  }
-  if (abs(destination_y_ - GetTopLeftY()) > 4) {
-    SetTopLeftPosition(
-        GetTopLeftX(),
-        (int) (GetTopLeftY() + velocity_ * (distance_y_ / distance_))
-    );
-  }
+  // We only update coordinates (independently for x and y) if not yet close enough to destination
+  bool update_x_coordinate = abs(destination_x_ - GetTopLeftX()) > 4;
+  bool update_y_coordinate = abs(destination_y_ - GetTopLeftY()) > 4;
+
+  SetTopLeftPosition(
+      update_x_coordinate ? (int) (GetTopLeftX() + velocity_ * (distance_x_ / distance_)) : GetTopLeftX(),
+      update_y_coordinate ? (int) (GetTopLeftY() + velocity_ * (distance_y_ / distance_)) : GetTopLeftY()
+  );
+
+  // Must update player angle so trajectory is maintained when transition to slick ground occurs
+  player_angle_ = atan2(distance_y_, distance_x_) * 180 / M_PI + 180;
 
 }
 

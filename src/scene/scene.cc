@@ -43,7 +43,6 @@ void Scene::Run() {
 
     RunSingleIterationLoopBody();
 
-    SDL_Delay(15);
   }
 
   RunPostLoop();
