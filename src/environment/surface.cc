@@ -28,6 +28,10 @@ SDL_Color Surface::GetColor() {
       return {0xFF, 0xFF, 0xFF, 0xFF}; // white
     case WALL:
       return {0xFF, 0x00, 0x00, 0xFF}; // red
+    case START_POINT:
+      return {0xFF, 0xFF, 0x00, 0xFF}; // yellow
+    case END_POINT:
+      return {0xFF, 0xA5, 0x00, 0xFF}; // orange
     default:
       throw std::runtime_error(boost::str(boost::format("Invalid surface type: %1%\n") % surface_type_));
   }

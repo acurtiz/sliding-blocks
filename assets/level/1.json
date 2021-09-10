@@ -46,5 +46,23 @@
       "width": 20,
       "height": 480
     }
+  ],
+  "end_points": [
+    {
+      "id": 0,
+      "x": 250,
+      "y": 430,
+      "width": 50,
+      "height": 50
+    }
+  ],
+  "start_points": [
+    {
+      "id": 0,
+      "x": 50,
+      "y": 10,
+      "width": 50,
+      "height": 50
+    }
   ]
 }

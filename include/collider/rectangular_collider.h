@@ -15,18 +15,18 @@ class RectangularCollider {
   explicit RectangularCollider(Rectangle &rectangle);
   bool IsCollision(RectangularCollider &other);
 
-  template<typename InputIterator>
-  bool IsCollision(InputIterator begin, InputIterator end);
+  template<typename Container>
+  bool IsCollision(Container &container);
 
  private:
   Rectangle &rectangle_;
 
 };
 
-template<typename InputIterator>
-bool RectangularCollider::IsCollision(InputIterator begin, InputIterator end) {
+template<typename Container>
+bool RectangularCollider::IsCollision(Container &container) {
 
-  for (InputIterator it = begin; it != end; ++it) {
+  for (typename Container::iterator it = container.begin(); it != container.end(); ++it) {
     RectangularCollider *other = (RectangularCollider *) *it;
     if (IsCollision(*other)) {
       return true;

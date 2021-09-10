@@ -1,5 +1,7 @@
 #include <vector>
 #include "environment/surface.h"
+#include "environment/start_point.h"
+#include "environment/end_point.h"
 
 #ifndef SLIDINGBLOCKS_INCLUDE_LEVEL_LOADER_LEVEL_LOADER_H_
 #define SLIDINGBLOCKS_INCLUDE_LEVEL_LOADER_LEVEL_LOADER_H_
@@ -10,15 +12,24 @@ class LevelLoader {
 
  public:
   explicit LevelLoader(SDL_Renderer *renderer);
-  virtual std::vector<Surface *> GetSlickFloors();
-  virtual std::vector<Surface *> GetWalkableFloors();
-  virtual std::vector<Surface *> GetWalls();
+  std::vector<Surface *> GetSlickFloors();
+  std::vector<Surface *> GetWalkableFloors();
+  std::vector<Surface *> GetWalls();
+  std::vector<StartPoint *> GetStartPoints();
+  std::vector<EndPoint *> GetEndPoints();
+  void FreeAll();
 
  protected:
   SDL_Renderer *renderer_;
   std::vector<Surface *> slick_floors_;
   std::vector<Surface *> walkable_floors_;
   std::vector<Surface *> walls_;
+  std::vector<EndPoint *> end_points_;
+  std::vector<StartPoint *> start_points_;
+
+ private:
+  template<typename PointerContainer>
+  void FreeSurfaces(PointerContainer surfaces);
 
 };
 

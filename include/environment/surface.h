@@ -9,7 +9,9 @@ namespace sliding_blocks {
 enum SurfaceType {
   WALL,
   SLICK_FLOOR,
-  NORMAL_FLOOR
+  NORMAL_FLOOR,
+  START_POINT,
+  END_POINT
 };
 
 class Surface : public Rectangle, public RectangularCollider {

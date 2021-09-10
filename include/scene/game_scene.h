@@ -1,7 +1,11 @@
 #include <vector>
+#include <map>
 #include "scene/scene.h"
 #include "player/player.h"
 #include "environment/surface.h"
+#include "environment/start_point.h"
+#include "environment/end_point.h"
+#include "level_loader/json_file_loader.h"
 
 #ifndef SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
 #define SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
@@ -25,6 +29,13 @@ class GameScene : public Scene {
   std::vector<Surface *> walls_;
   std::vector<Surface *> slick_floors_;
   std::vector<Surface *> walkable_floors_;
+  std::vector<StartPoint *> start_points_;
+  std::vector<EndPoint *> end_points_;
+  std::map<int, StartPoint *> start_point_id_to_obj_;
+  std::map<int, EndPoint *> end_point_id_to_obj_;
+  int start_point_id_;
+
+  JsonFileLoader level_loader_;
 
 };
 
