@@ -1,0 +1,33 @@
+{
+  "slick_floors": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "height": 500
+    }
+  ],
+  "walkable_floors": [
+  ],
+  "walls": [
+  ],
+  "start_points": [
+    {
+      "id": 0,
+      "x": 240,
+      "y": 240,
+      "width": 20,
+      "height": 20
+    }
+  ],
+  "end_points": [
+    {
+      "id": 0,
+      "x": 450,
+      "y": 450,
+      "width": 50,
+      "height": 50,
+      "has_next_stage": false
+    }
+  ]
+}

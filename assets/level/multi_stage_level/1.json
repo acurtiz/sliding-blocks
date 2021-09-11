@@ -53,7 +53,10 @@
       "x": 250,
       "y": 430,
       "width": 50,
-      "height": 50
+      "height": 50,
+      "has_next_stage": true,
+      "next_stage_file_path": "multi_stage_level/2.json",
+      "next_stage_start_point_id": 0
     }
   ],
   "start_points": [

@@ -37,13 +37,13 @@ void LevelLoader::FreeAll() {
 }
 
 template<typename PointerContainer>
-void LevelLoader::FreeSurfaces(PointerContainer surfaces) {
+void LevelLoader::FreeSurfaces(PointerContainer &pointers) {
 
-  while (!surfaces.empty()) {
-    Surface *surface = surfaces.back();
-    delete surface;
-    surfaces.pop_back();
+  for (auto &pointer : pointers) {
+    delete pointer;
   }
+
+  pointers.clear();
 
 }
 

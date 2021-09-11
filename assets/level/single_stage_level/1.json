@@ -1,0 +1,69 @@
+{
+  "slick_floors": [
+    {
+      "x": 0,
+      "y": 100,
+      "width": 500,
+      "height": 380
+    }
+  ],
+  "walkable_floors": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "height": 500
+    },
+    {
+      "x": 50,
+      "y": 10,
+      "width": 50,
+      "height": 50
+    }
+  ],
+  "walls": [
+    {
+      "x": 170,
+      "y": 0,
+      "width": 330,
+      "height": 100
+    },
+    {
+      "x": 0,
+      "y": 100,
+      "width": 100,
+      "height": 380
+    },
+    {
+      "x": 0,
+      "y": 460,
+      "width": 500,
+      "height": 20
+    },
+    {
+      "x": 480,
+      "y": 0,
+      "width": 20,
+      "height": 480
+    }
+  ],
+  "end_points": [
+    {
+      "id": 0,
+      "x": 250,
+      "y": 430,
+      "width": 50,
+      "height": 50,
+      "has_next_stage": false
+    }
+  ],
+  "start_points": [
+    {
+      "id": 0,
+      "x": 50,
+      "y": 10,
+      "width": 50,
+      "height": 50
+    }
+  ]
+}

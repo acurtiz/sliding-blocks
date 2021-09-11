@@ -16,14 +16,23 @@ GameScene::GameScene(SDL_Renderer *renderer,
       screen_height_(screen_width),
       screen_width_(screen_width),
       player_(nullptr),
-      level_loader_(renderer),
-      start_point_id_(0) {
+      level_loader_(renderer) {
 
 }
 
-void GameScene::RunPreLoop() {
+void GameScene::FreeLevelState() {
 
-  level_loader_.Load("assets/level/1.json");
+  level_loader_.FreeAll();
+  start_point_id_to_obj_.clear();
+  end_point_id_to_obj_.clear();
+
+}
+
+void GameScene::LoadAndInitializeLevel(const std::string &level_file_path) {
+
+  FreeLevelState();
+
+  level_loader_.Load("assets/level/" + level_file_path);
 
   walls_ = level_loader_.GetWalls();
   walkable_floors_ = level_loader_.GetWalkableFloors();
@@ -39,9 +48,16 @@ void GameScene::RunPreLoop() {
     end_point_id_to_obj_[end_point->GetId()] = end_point;
   }
 
+}
+
+void GameScene::RunPreLoop() {
+
+  FreeLevelState();
+  LoadAndInitializeLevel("multi_stage_level/1.json");
+
   player_ = new Player(renderer_, 10, 10,
-                       start_point_id_to_obj_[start_point_id_]->GetTopLeftX(),
-                       start_point_id_to_obj_[start_point_id_]->GetTopLeftY());
+                       start_point_id_to_obj_[0]->GetTopLeftX(),
+                       start_point_id_to_obj_[0]->GetTopLeftY());
 
 }
 
@@ -50,7 +66,7 @@ void GameScene::RunPostLoop() {
   delete player_;
   player_ = nullptr;
 
-  level_loader_.FreeAll();
+  FreeLevelState();
 
 }
 
@@ -66,8 +82,22 @@ void GameScene::RunSingleIterationLoopBody() {
   if (player_->IsCollision(start_points_)) {
     player_->MoveCharacterStraight();
   } else if (player_->IsCollision(end_points_)) {
-    // TODO need to be able to figure out which object this was
-    printf("Reached end point - should load next level!\n");
+
+    auto endpoint = player_->GetCollidingObject<EndPoint *>(end_points_);
+
+    if (endpoint->HasNextStage()) {
+
+      printf("Loading next stage: %s\n", endpoint->GetNextStageFilePath().c_str());
+      LoadAndInitializeLevel(endpoint->GetNextStageFilePath());
+      player_->ResetMovement();
+      player_->SetTopLeftPosition(start_point_id_to_obj_[endpoint->GetNextStageStartPointId()]->GetTopLeftX(),
+                                  start_point_id_to_obj_[endpoint->GetNextStageStartPointId()]->GetTopLeftY());
+
+    } else {
+      printf("Quitting because no next stage\n");
+      QuitLocal();
+    }
+
   } else if (player_->IsCollision(walls_)) {
     printf("Hit wall, so not moving anymore.\n");
   } else if (player_->IsCollision(slick_floors_)) {
@@ -82,8 +112,8 @@ void GameScene::RunSingleIterationLoopBody() {
   for (Surface *walkable_floor : walkable_floors_) walkable_floor->Render();
   for (Surface *slick_floor : slick_floors_) slick_floor->Render();
   for (Surface *wall : walls_) wall->Render();
-  for (const auto &entry : start_point_id_to_obj_) entry.second->Render();
-  for (const auto &entry : end_point_id_to_obj_) entry.second->Render();
+  for (StartPoint *start_point : start_points_) start_point->Render();
+  for (EndPoint *end_point : end_points_) end_point->Render();
   player_->Render();
 
   SDL_RenderPresent(renderer_);

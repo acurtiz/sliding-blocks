@@ -91,6 +91,18 @@ void Player::MoveCharacterSlide() {
 
 }
 
+void Player::ResetMovement() {
+
+  destination_x_ = -1;
+  destination_y_ = -1;
+  distance_ = 0;
+  distance_x_ = 0;
+  distance_y_ = 0;
+  player_angle_ = 0;
+  target_angle_ = 0;
+
+}
+
 void Player::Render() {
 
   // Get previous color

@@ -29,7 +29,7 @@ class LevelLoader {
 
  private:
   template<typename PointerContainer>
-  void FreeSurfaces(PointerContainer surfaces);
+  void FreeSurfaces(PointerContainer &surfaces);
 
 };
 

@@ -15,6 +15,7 @@ class Player : public Rectangle, public RectangularCollider {
   void MoveCharacterSlide();
   void MoveCharacterStraight();
   void Render();
+  void ResetMovement();
 
  private:
 

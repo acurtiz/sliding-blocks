@@ -18,6 +18,9 @@ class RectangularCollider {
   template<typename Container>
   bool IsCollision(Container &container);
 
+  template<typename ReturnType, typename Container>
+  ReturnType GetCollidingObject(Container &container);
+
  private:
   Rectangle &rectangle_;
 
@@ -34,6 +37,19 @@ bool RectangularCollider::IsCollision(Container &container) {
   }
 
   return false;
+}
+
+template<typename ReturnType, typename Container>
+ReturnType RectangularCollider::GetCollidingObject(Container &container) {
+
+  for (typename Container::iterator it = container.begin(); it != container.end(); ++it) {
+    RectangularCollider *other = (RectangularCollider *) *it;
+    if (IsCollision(*other)) {
+      return *it;
+    }
+  }
+
+  return nullptr;
 }
 
 }
