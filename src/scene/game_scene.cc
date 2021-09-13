@@ -84,7 +84,13 @@ void GameScene::RunSingleIterationLoopBody() {
 
   if (player_->IsCollision(start_points_)) {
 
-    player_->MoveCharacterStraight();
+    // If player was sliding but just landed on non-slick land, they should stop moving (as opposed to
+    // moving to the last clicked destination)
+    if (player_->IsSliding()) {
+      player_->ResetMovement();
+    } else {
+      player_->MoveCharacterStraight(elapsed_millis_since_last_frame);
+    }
 
   } else if (player_->IsCollision(end_points_)) {
 
@@ -109,11 +115,15 @@ void GameScene::RunSingleIterationLoopBody() {
 
   } else if (player_->IsCollision(slick_floors_)) {
 
-    player_->MoveCharacterSlide();
+    player_->MoveCharacterSlide(elapsed_millis_since_last_frame);
 
   } else {
 
-    player_->MoveCharacterStraight();
+    if (player_->IsSliding()) {
+      player_->ResetMovement();
+    } else {
+      player_->MoveCharacterStraight(elapsed_millis_since_last_frame);
+    }
 
   }
 

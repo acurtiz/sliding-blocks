@@ -12,24 +12,38 @@ class Player : public Rectangle, public RectangularCollider {
  public:
   Player(SDL_Renderer *renderer, int width, int height, int top_left_x, int top_left_y);
   void HandleEvent(SDL_Event &event);
-  void MoveCharacterSlide();
-  void MoveCharacterStraight();
+  void MoveCharacterSlide(uint32_t elapsed_millis);
+  void MoveCharacterStraight(uint32_t elapsed_millis);
   void Render();
   void ResetMovement();
 
+  void SetTopLeftPosition(double x, double y);
+  double GetPreciseTopLeftX() const;
+  double GetPreciseTopLeftY() const;
+
+  bool IsSliding() const;
+
  private:
+
+  bool ShouldMoveToDestination() const;
 
   SDL_Renderer *renderer_;
   SDL_Color color_;
 
+  double top_left_x_;
+  double top_left_y_;
+
   int destination_x_;
   int destination_y_;
-  double distance_x_;
-  double distance_y_;
-  double distance_;
-  double velocity_; // pixels per frame
+  double pixels_to_move_per_milli_; // speed
+  double pixels_to_move_per_milli_x_;
+  double pixels_to_move_per_milli_y_;
+  double millis_remaining_to_reach_dest_;
+
   double player_angle_;
   double target_angle_;
+
+  bool is_sliding_;
 
 };
 

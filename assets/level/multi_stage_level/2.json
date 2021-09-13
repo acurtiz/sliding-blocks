@@ -2,12 +2,18 @@
   "slick_floors": [
     {
       "x": 0,
-      "y": 0,
+      "y": 250,
       "width": 500,
-      "height": 500
+      "height": 250
     }
   ],
   "walkable_floors": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "height": 250
+    }
   ],
   "walls": [
   ],
