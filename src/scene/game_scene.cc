@@ -79,8 +79,13 @@ void GameScene::RunSingleIterationEventHandler(SDL_Event &event) {
 
 void GameScene::RunSingleIterationLoopBody() {
 
+  uint32_t elapsed_millis_since_last_frame = timer_.GetElapsedMilliseconds();
+  timer_.StartTimer();
+
   if (player_->IsCollision(start_points_)) {
+
     player_->MoveCharacterStraight();
+
   } else if (player_->IsCollision(end_points_)) {
 
     auto endpoint = player_->GetCollidingObject<EndPoint *>(end_points_);
@@ -99,11 +104,17 @@ void GameScene::RunSingleIterationLoopBody() {
     }
 
   } else if (player_->IsCollision(walls_)) {
+
     printf("Hit wall, so not moving anymore.\n");
+
   } else if (player_->IsCollision(slick_floors_)) {
+
     player_->MoveCharacterSlide();
+
   } else {
+
     player_->MoveCharacterStraight();
+
   }
 
   SDL_SetRenderDrawColor(renderer_, background_color_.r, background_color_.g, background_color_.b, background_color_.a);

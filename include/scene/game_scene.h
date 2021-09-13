@@ -6,6 +6,7 @@
 #include "environment/start_point.h"
 #include "environment/end_point.h"
 #include "level_loader/json_file_loader.h"
+#include "time/timer.h"
 
 #ifndef SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
 #define SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
@@ -39,6 +40,8 @@ class GameScene : public Scene {
   std::map<int, EndPoint *> end_point_id_to_obj_;
 
   JsonFileLoader level_loader_;
+
+  Timer timer_;
 
 };
 
