@@ -25,9 +25,10 @@ class RectangularButton : public Rectangle {
   SDL_Renderer *renderer_;
   Text *label_;
   const SDL_Color *current_color_;
-  const SDL_Color color_default_ = {0x93, 0xE9, 0xBE, 0xFF};
-  const SDL_Color color_mouse_down_ = {0xDA, 0x70, 0xD6, 0xFF};
-  const SDL_Color color_mouse_motion_ = {0xBB, 0xCC, 0xD6, 0xFF};
+
+  const SDL_Color color_default_ = {0x38, 0x9E, 0xED, 0xFF}; // Blue
+  const SDL_Color color_mouse_down_ = {0x3A, 0xF7, 0xAF, 0xFF}; // Greenish
+  const SDL_Color color_mouse_motion_ = {0x3A, 0xD7, 0xF7, 0xFF}; // Lighter Blue
 
 };
 

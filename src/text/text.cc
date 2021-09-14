@@ -5,7 +5,8 @@
 
 namespace sliding_blocks {
 
-Text::Text(SDL_Renderer *renderer, TTF_Font *font, SDL_Color color, std::string text, int wrap_length_pixels) {
+Text::Text(SDL_Renderer *renderer, TTF_Font *font, SDL_Color color, std::string text, int wrap_length_pixels)
+    : top_left_x_(0), top_left_y_(0) {
 
   renderer_ = renderer;
   text_string_ = text;
@@ -60,6 +61,14 @@ void Text::Render() {
 void Text::SetTopLeftPosition(int top_left_x, int top_left_y) {
   top_left_x_ = top_left_x;
   top_left_y_ = top_left_y;
+}
+
+int Text::GetTopLeftX() const {
+  return top_left_x_;
+}
+
+int Text::GetTopLeftY() const {
+  return top_left_y_;
 }
 
 std::string Text::GetString() const {

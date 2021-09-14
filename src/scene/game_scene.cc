@@ -9,12 +9,8 @@ namespace sliding_blocks {
 
 GameScene::GameScene(SDL_Renderer *renderer,
                      SDL_Window *window,
-                     bool &global_quit,
-                     int screen_height,
-                     int screen_width)
+                     bool &global_quit)
     : Scene(renderer, window, global_quit),
-      screen_height_(screen_width),
-      screen_width_(screen_width),
       player_(nullptr),
       level_loader_(renderer),
       current_stage_start_point_id_(0) {
@@ -73,7 +69,6 @@ void GameScene::RunPostLoop() {
 
 void GameScene::RunSingleIterationEventHandler(SDL_Event &event) {
 
-  Scene::RunSingleIterationEventHandler(event);
   player_->HandleEvent(event);
 
 }

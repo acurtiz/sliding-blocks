@@ -16,20 +16,19 @@ namespace sliding_blocks {
 class GameScene : public Scene {
 
  public:
-  GameScene(SDL_Renderer *renderer, SDL_Window *window, bool &global_quit, int screen_height, int screen_width);
+  GameScene(SDL_Renderer *renderer, SDL_Window *window, bool &global_quit);
+
+ private:
+
   void RunPreLoop() override;
   void RunPostLoop() override;
   void RunSingleIterationEventHandler(SDL_Event &event) override;
   void RunSingleIterationLoopBody() override;
 
- private:
-
   void FreeLevelState();
   void LoadAndInitializeLevel(const std::string &level_file_path);
 
   SDL_Color background_color_ = {0x00, 0x00, 0x00, 0xFF};
-  int screen_height_;
-  int screen_width_;
   Player *player_;
   std::vector<Surface *> walls_;
   std::vector<Surface *> slick_floors_;

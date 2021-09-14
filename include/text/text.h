@@ -14,6 +14,8 @@ class Text {
   ~Text();
   void Free();
   void SetTopLeftPosition(int top_left_x, int top_left_y);
+  int GetTopLeftX() const;
+  int GetTopLeftY() const;
   int GetWidth() const;
   int GetHeight() const;
   void Render();

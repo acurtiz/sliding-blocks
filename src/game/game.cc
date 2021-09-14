@@ -1,7 +1,8 @@
 #include <SDL2/SDL.h>
+#include <boost/format.hpp>
 #include "game/game.h"
 #include "scene/game_scene.h"
-#include <boost/format.hpp>
+#include "scene/title_scene.h"
 
 namespace sliding_blocks {
 
@@ -46,9 +47,8 @@ Game::~Game() {
 
 void Game::Run() {
 
-  GameScene game_scene = GameScene(renderer_, window_, global_quit_,
-                                   (int) screen_height_, (int) screen_width_);
-  game_scene.Run();
+  TitleScene title_scene = TitleScene(renderer_, window_, global_quit_);
+  title_scene.Run();
 
 }
 
