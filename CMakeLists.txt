@@ -23,11 +23,11 @@ find_library(SDL2_LIBRARY
         HINTS /Library/Frameworks)
 target_link_libraries(SlidingBlocks LINK_PUBLIC ${SDL2_LIBRARY})
 
-# Link to SDL2_image library (allows loading non-BMP images)
-find_library(SDL2_IMAGE_LIBRARY
-        NAMES SDL2_image
+# Link to SDL2_ttf library
+find_library(SDL2_TTF_LIBRARY
+        NAMES SDL2_ttf
         HINTS /Library/Frameworks)
-target_link_libraries(SlidingBlocks LINK_PUBLIC ${SDL2_IMAGE_LIBRARY})
+target_link_libraries(SlidingBlocks LINK_PUBLIC ${SDL2_TTF_LIBRARY})
 
 # Include Boost
 set(BOOST_HEADER_DIRECTORY /Users/alex/Libraries/boost_1_76_0)

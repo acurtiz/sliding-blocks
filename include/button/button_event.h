@@ -1,0 +1,13 @@
+#ifndef SLIDINGBLOCKS_INCLUDE_BUTTON_BUTTON_EVENT_H_
+#define SLIDINGBLOCKS_INCLUDE_BUTTON_BUTTON_EVENT_H_
+
+namespace sliding_blocks {
+
+enum ButtonEvent {
+  NONE = 0,
+  PRESSED = 1
+};
+
+}
+
+#endif //SLIDINGBLOCKS_INCLUDE_BUTTON_BUTTON_EVENT_H_

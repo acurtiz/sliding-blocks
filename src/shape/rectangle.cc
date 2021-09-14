@@ -1,3 +1,4 @@
+#include <SDL2/SDL.h>
 #include "shape/rectangle.h"
 
 namespace sliding_blocks {
@@ -36,6 +37,18 @@ void Rectangle::SetWidth(int width) {
 
 void Rectangle::SetHeight(int height) {
   height_ = height;
+}
+
+bool Rectangle::IsMouseInside() {
+
+  int mouse_x, mouse_y = 0;
+  SDL_GetMouseState(&mouse_x, &mouse_y);
+
+  return (mouse_x >= GetTopLeftX())
+      && (mouse_x <= GetTopLeftX() + GetWidth())
+      && (mouse_y >= GetTopLeftY())
+      && (mouse_y <= GetTopLeftY() + GetHeight());
+
 }
 
 }

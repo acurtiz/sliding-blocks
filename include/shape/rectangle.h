@@ -7,13 +7,14 @@ class Rectangle {
 
  public:
   Rectangle(int top_left_x, int top_left_y, int width, int height);
-  void SetTopLeftPosition(int x, int y);
+  virtual void SetTopLeftPosition(int x, int y);
   void SetWidth(int width);
   void SetHeight(int height);
   int GetTopLeftX();
   int GetTopLeftY();
   int GetWidth();
   int GetHeight();
+  bool IsMouseInside();
 
  private:
   int top_left_x_;
