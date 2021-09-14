@@ -29,6 +29,9 @@ void JsonFileLoader::Load(const std::string &file_name) {
   LoadSurfacesIntoVector(walkable_floors_, NORMAL_FLOOR, "walkable_floors");
   LoadStartPointsIntoVector(start_points_, "start_points");
   LoadEndPointsIntoVector(end_points_, "end_points");
+  level_name_ = document_["name"].GetString();
+  level_width_ = document_["width"].GetInt();
+  level_height_ = document_["height"].GetInt();
 
 }
 

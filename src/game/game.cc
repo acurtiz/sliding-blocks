@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2_ttf/SDL_ttf.h>
 #include <boost/format.hpp>
 #include "game/game.h"
 #include "scene/game_scene.h"
@@ -32,6 +33,12 @@ Game::Game() {
   if (renderer_ == nullptr) {
     throw std::runtime_error(
         boost::str(boost::format("Renderer could not be created, error: %1%\n") % SDL_GetError())
+    );
+  }
+
+  if (TTF_Init() == -1) {
+    throw std::runtime_error(
+        boost::str(boost::format("SDL_ttf could not be initialized, error: %1%\n") % TTF_GetError())
     );
   }
 

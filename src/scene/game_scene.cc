@@ -1,3 +1,6 @@
+#include <SDL2/SDL.h>
+#include <SDL2_ttf/SDL_ttf.h>
+#include <boost/format.hpp>
 #include <fstream>
 #include <sstream>
 #include "scene/game_scene.h"
@@ -13,7 +16,24 @@ GameScene::GameScene(SDL_Renderer *renderer,
     : Scene(renderer, window, global_quit),
       player_(nullptr),
       level_loader_(renderer),
-      current_stage_start_point_id_(0) {
+      current_stage_start_point_id_(0),
+      font_(nullptr),
+      remaining_lives_text_(nullptr),
+      current_stage_text_(nullptr),
+      current_level_width_(-1),
+      current_level_height_(-1),
+      current_level_name_() {
+
+  font_ = TTF_OpenFont("assets/font/OpenSans-Regular.ttf", 18);
+  if (font_ == nullptr) {
+    throw std::runtime_error(boost::str(boost::format("Failed to load font, error: %1%\n") % TTF_GetError()));
+  }
+
+}
+
+GameScene::~GameScene() {
+
+  TTF_CloseFont(font_);
 
 }
 
@@ -45,21 +65,32 @@ void GameScene::LoadAndInitializeLevel(const std::string &level_file_path) {
     end_point_id_to_obj_[end_point->GetId()] = end_point;
   }
 
+  current_level_height_ = level_loader_.GetLevelHeight();
+  current_level_width_ = level_loader_.GetLevelWidth();
+  current_level_name_ = level_loader_.GetLevelName();
+
 }
 
 void GameScene::RunPreLoop() {
 
+  std::string initial_level = "multi_stage_level/1.json";
+
   FreeLevelState();
-  LoadAndInitializeLevel("multi_stage_level/1.json");
+  LoadAndInitializeLevel(initial_level);
 
   player_ = new Player(renderer_, 10, 10,
                        start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
                        start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
 
+  UpdateRemainingLivesText();
+  UpdateCurrentStageText(current_level_name_);
+
 }
 
 void GameScene::RunPostLoop() {
 
+  delete remaining_lives_text_;
+  delete current_stage_text_;
   delete player_;
   player_ = nullptr;
 
@@ -70,6 +101,30 @@ void GameScene::RunPostLoop() {
 void GameScene::RunSingleIterationEventHandler(SDL_Event &event) {
 
   player_->HandleEvent(event);
+
+}
+
+void GameScene::UpdateRemainingLivesText() {
+
+  delete remaining_lives_text_;
+  remaining_lives_text_ = new Text(renderer_,
+                                   font_,
+                                   {0xFF, 0xFF, 0xFF, 0xFF},
+                                   boost::str(boost::format("Lives: %1%") % player_->GetLives()));
+
+  remaining_lives_text_->SetTopLeftPosition(10, 505);
+
+}
+
+void GameScene::UpdateCurrentStageText(std::string stage_name) {
+
+  delete current_stage_text_;
+  current_stage_text_ = new Text(renderer_,
+                                 font_,
+                                 {0xFF, 0xFF, 0xFF, 0xFF},
+                                 boost::str(boost::format("Current Level: %1%") % current_level_name_));
+  current_stage_text_->SetTopLeftPosition(GetScreenWidth() - current_stage_text_->GetWidth() - 10,
+                                          remaining_lives_text_->GetTopLeftY());
 
 }
 
@@ -94,10 +149,14 @@ void GameScene::RunSingleIterationLoopBody() {
 
     if (endpoint->HasNextStage()) {
 
-      printf("Loading next stage: %s\n", endpoint->GetNextStageFilePath().c_str());
-      LoadAndInitializeLevel(endpoint->GetNextStageFilePath());
+      std::string next_stage_file_path = endpoint->GetNextStageFilePath();
+      int next_stage_start_point_id = endpoint->GetNextStageStartPointId();
+
+      printf("Loading next stage: %s\n", next_stage_file_path.c_str());
+      LoadAndInitializeLevel(next_stage_file_path);
+      UpdateCurrentStageText(next_stage_file_path);
       player_->ResetMovement();
-      current_stage_start_point_id_ = endpoint->GetNextStageStartPointId();
+      current_stage_start_point_id_ = next_stage_start_point_id;
       player_->SetTopLeftPosition(start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
                                   start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
 
@@ -110,8 +169,10 @@ void GameScene::RunSingleIterationLoopBody() {
 
     if (player_->HasRemainingLives()) {
       player_->DecrementLives();
+      UpdateRemainingLivesText();
       player_->SetTopLeftPosition(start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
                                   start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
+
       printf("Player hit wall thus lost a life! Remaining lives: %d\n", player_->GetLives());
     } else {
       printf("Player died but no remaining lives; exiting!\n");
@@ -141,6 +202,8 @@ void GameScene::RunSingleIterationLoopBody() {
   for (StartPoint *start_point : start_points_) start_point->Render();
   for (EndPoint *end_point : end_points_) end_point->Render();
   player_->Render();
+  remaining_lives_text_->Render();
+  current_stage_text_->Render();
 
   SDL_RenderPresent(renderer_);
 

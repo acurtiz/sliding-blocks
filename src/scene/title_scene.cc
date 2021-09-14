@@ -13,12 +13,6 @@ TitleScene::TitleScene(SDL_Renderer *renderer, SDL_Window *window, bool &global_
       quit_button_label_(nullptr),
       quit_button_(nullptr) {
 
-  if (TTF_Init() == -1) {
-    throw std::runtime_error(
-        boost::str(boost::format("SDL_ttf could not be initialized, error: %1%\n") % TTF_GetError())
-    );
-  }
-
   title_font_ = TTF_OpenFont("assets/font/OpenSans-Regular.ttf", 28);
   if (title_font_ == nullptr) {
     throw std::runtime_error(boost::str(boost::format("Failed to load font, error: %1%\n") % TTF_GetError()));
@@ -79,7 +73,7 @@ void TitleScene::RunPostLoop() {
 void TitleScene::RunSingleIterationEventHandler(SDL_Event &event) {
 
   if (start_button_->HandleEvent(&event) == PRESSED) {
-    GameScene game_scene = GameScene(renderer_, window_, global_quit_);
+    GameScene game_scene(renderer_, window_, global_quit_);
     game_scene.Run();
   }
 

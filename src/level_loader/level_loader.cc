@@ -47,4 +47,16 @@ void LevelLoader::FreeSurfaces(PointerContainer &pointers) {
 
 }
 
+int LevelLoader::GetLevelWidth() const {
+  return level_width_;
+}
+
+int LevelLoader::GetLevelHeight() const {
+  return level_height_;
+}
+
+std::string LevelLoader::GetLevelName() const {
+  return level_name_;
+}
+
 }
