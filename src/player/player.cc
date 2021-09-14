@@ -7,6 +7,7 @@ namespace sliding_blocks {
 Player::Player(SDL_Renderer *renderer, int width, int height, int top_left_x, int top_left_y)
     : Rectangle(top_left_x, top_left_y, width, height),
       RectangularCollider((Rectangle &) *this),
+      LivingUnit(3),
       renderer_(renderer),
       top_left_x_(top_left_x),
       top_left_y_(top_left_y),
@@ -107,7 +108,7 @@ void Player::MoveCharacterSlide(uint32_t elapsed_millis) {
   // result to be [0, 360], which still lets us determine the exact quadrant
   auto target_angle_relative_to_player_angle = (int) Trig::NormalizeDegrees(target_angle_ - player_angle_);
   bool should_increase_player_angle = target_angle_relative_to_player_angle < 180;
-  
+
   player_angle_ = should_increase_player_angle ?
                   player_angle_ + 5 :
                   player_angle_ - 5;

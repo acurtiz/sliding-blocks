@@ -16,7 +16,8 @@ GameScene::GameScene(SDL_Renderer *renderer,
       screen_height_(screen_width),
       screen_width_(screen_width),
       player_(nullptr),
-      level_loader_(renderer) {
+      level_loader_(renderer),
+      current_stage_start_point_id_(0) {
 
 }
 
@@ -56,8 +57,8 @@ void GameScene::RunPreLoop() {
   LoadAndInitializeLevel("multi_stage_level/1.json");
 
   player_ = new Player(renderer_, 10, 10,
-                       start_point_id_to_obj_[0]->GetTopLeftX(),
-                       start_point_id_to_obj_[0]->GetTopLeftY());
+                       start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
+                       start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
 
 }
 
@@ -101,8 +102,9 @@ void GameScene::RunSingleIterationLoopBody() {
       printf("Loading next stage: %s\n", endpoint->GetNextStageFilePath().c_str());
       LoadAndInitializeLevel(endpoint->GetNextStageFilePath());
       player_->ResetMovement();
-      player_->SetTopLeftPosition(start_point_id_to_obj_[endpoint->GetNextStageStartPointId()]->GetTopLeftX(),
-                                  start_point_id_to_obj_[endpoint->GetNextStageStartPointId()]->GetTopLeftY());
+      current_stage_start_point_id_ = endpoint->GetNextStageStartPointId();
+      player_->SetTopLeftPosition(start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
+                                  start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
 
     } else {
       printf("Quitting because no next stage\n");
@@ -111,7 +113,15 @@ void GameScene::RunSingleIterationLoopBody() {
 
   } else if (player_->IsCollision(walls_)) {
 
-    printf("Hit wall, so not moving anymore.\n");
+    if (player_->HasRemainingLives()) {
+      player_->DecrementLives();
+      player_->SetTopLeftPosition(start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
+                                  start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
+      printf("Player hit wall thus lost a life! Remaining lives: %d\n", player_->GetLives());
+    } else {
+      printf("Player died but no remaining lives; exiting!\n");
+      QuitLocal();
+    }
 
   } else if (player_->IsCollision(slick_floors_)) {
 

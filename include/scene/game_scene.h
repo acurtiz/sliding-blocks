@@ -39,6 +39,8 @@ class GameScene : public Scene {
   std::map<int, StartPoint *> start_point_id_to_obj_;
   std::map<int, EndPoint *> end_point_id_to_obj_;
 
+  int current_stage_start_point_id_;
+
   JsonFileLoader level_loader_;
 
   Timer timer_;

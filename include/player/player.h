@@ -1,13 +1,14 @@
 #include <SDL2/SDL.h>
 #include "shape/rectangle.h"
 #include "collider/rectangular_collider.h"
+#include "game/living_unit.h"
 
 #ifndef SLIDINGBLOCKS_INCLUDE_PLAYER_PLAYER_H_
 #define SLIDINGBLOCKS_INCLUDE_PLAYER_PLAYER_H_
 
 namespace sliding_blocks {
 
-class Player : public Rectangle, public RectangularCollider {
+class Player : public Rectangle, public RectangularCollider, public LivingUnit {
 
  public:
   Player(SDL_Renderer *renderer, int width, int height, int top_left_x, int top_left_y);
@@ -17,6 +18,7 @@ class Player : public Rectangle, public RectangularCollider {
   void Render();
   void ResetMovement();
 
+  // TODO: evaluate if/how we get rid of needing to maintain these more precise positions
   void SetTopLeftPosition(double x, double y);
   double GetPreciseTopLeftX() const;
   double GetPreciseTopLeftY() const;
