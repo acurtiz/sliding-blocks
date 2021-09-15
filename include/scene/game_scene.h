@@ -31,6 +31,7 @@ class GameScene : public Scene {
   void LoadAndInitializeLevel(const std::string &level_file_path);
   void UpdateRemainingLivesText();
   void UpdateCurrentStageText(std::string stage_name);
+  void UpdateStateIfPlayerCollision(uint32_t elapsed_millis_since_last_frame);
 
   SDL_Color background_color_ = {0x00, 0x00, 0x00, 0xFF}; // black
   Player *player_;

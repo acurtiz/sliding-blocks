@@ -69,6 +69,22 @@ void GameScene::LoadAndInitializeLevel(const std::string &level_file_path) {
   current_level_width_ = level_loader_.GetLevelWidth();
   current_level_name_ = level_loader_.GetLevelName();
 
+  // Walls implicitly surround every level
+  walls_.push_back(new Surface(-1, 0, 1, level_loader_.GetLevelHeight(), renderer_, WALL)); // bordering left side
+  walls_.push_back(new Surface(level_loader_.GetLevelWidth(),
+                               0,
+                               1,
+                               level_loader_.GetLevelHeight(),
+                               renderer_,
+                               WALL)); // bordering right side
+  walls_.push_back(new Surface(0, -1, level_loader_.GetLevelWidth(), 1, renderer_, WALL)); // bordering top
+  walls_.push_back(new Surface(0,
+                               level_loader_.GetLevelHeight(),
+                               level_loader_.GetLevelWidth(),
+                               1,
+                               renderer_,
+                               WALL)); // bordering bottom
+
 }
 
 void GameScene::RunPreLoop() {
@@ -128,20 +144,9 @@ void GameScene::UpdateCurrentStageText(std::string stage_name) {
 
 }
 
-void GameScene::RunSingleIterationLoopBody() {
-
-  uint32_t elapsed_millis_since_last_frame = timer_.GetElapsedMilliseconds();
-  timer_.StartTimer();
+void GameScene::UpdateStateIfPlayerCollision(uint32_t elapsed_millis_since_last_frame) {
 
   if (player_->IsCollision(start_points_)) {
-
-    // If player was sliding but just landed on non-slick land, they should stop moving (as opposed to
-    // moving to the last clicked destination)
-    if (player_->IsSliding()) {
-      player_->ResetMovement();
-    } else {
-      player_->MoveCharacterStraight(elapsed_millis_since_last_frame);
-    }
 
   } else if (player_->IsCollision(end_points_)) {
 
@@ -192,6 +197,15 @@ void GameScene::RunSingleIterationLoopBody() {
     }
 
   }
+
+}
+
+void GameScene::RunSingleIterationLoopBody() {
+
+  uint32_t elapsed_millis_since_last_frame = timer_.GetElapsedMilliseconds();
+  timer_.StartTimer();
+
+  UpdateStateIfPlayerCollision(elapsed_millis_since_last_frame);
 
   SDL_SetRenderDrawColor(renderer_, background_color_.r, background_color_.g, background_color_.b, background_color_.a);
   SDL_RenderClear(renderer_);
