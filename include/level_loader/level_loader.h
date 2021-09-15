@@ -2,6 +2,7 @@
 #include "environment/surface.h"
 #include "environment/start_point.h"
 #include "environment/end_point.h"
+#include "enemy/enemy.h"
 
 #ifndef SLIDINGBLOCKS_INCLUDE_LEVEL_LOADER_LEVEL_LOADER_H_
 #define SLIDINGBLOCKS_INCLUDE_LEVEL_LOADER_LEVEL_LOADER_H_
@@ -17,6 +18,7 @@ class LevelLoader {
   std::vector<Surface *> GetWalls();
   std::vector<StartPoint *> GetStartPoints();
   std::vector<EndPoint *> GetEndPoints();
+  std::vector<Enemy *> GetEnemies();
   int GetLevelWidth() const;
   int GetLevelHeight() const;
   std::string GetLevelName() const;
@@ -29,13 +31,14 @@ class LevelLoader {
   std::vector<Surface *> walls_;
   std::vector<EndPoint *> end_points_;
   std::vector<StartPoint *> start_points_;
+  std::vector<Enemy *> enemies_;
   int level_width_;
   int level_height_;
   std::string level_name_;
 
  private:
   template<typename PointerContainer>
-  void FreeSurfaces(PointerContainer &surfaces);
+  void FreePointersInContainer(PointerContainer &pointers);
 
 };
 

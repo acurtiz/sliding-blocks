@@ -26,18 +26,23 @@ std::vector<EndPoint *> LevelLoader::GetEndPoints() {
   return end_points_;
 }
 
+std::vector<Enemy *> LevelLoader::GetEnemies() {
+  return enemies_;
+}
+
 void LevelLoader::FreeAll() {
 
-  FreeSurfaces(walls_);
-  FreeSurfaces(walkable_floors_);
-  FreeSurfaces(slick_floors_);
-  FreeSurfaces(start_points_);
-  FreeSurfaces(end_points_);
+  FreePointersInContainer(walls_);
+  FreePointersInContainer(walkable_floors_);
+  FreePointersInContainer(slick_floors_);
+  FreePointersInContainer(start_points_);
+  FreePointersInContainer(end_points_);
+  FreePointersInContainer(enemies_);
 
 }
 
 template<typename PointerContainer>
-void LevelLoader::FreeSurfaces(PointerContainer &pointers) {
+void LevelLoader::FreePointersInContainer(PointerContainer &pointers) {
 
   for (auto &pointer : pointers) {
     delete pointer;

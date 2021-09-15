@@ -7,6 +7,7 @@
 #include "player/player.h"
 #include "environment/surface.h"
 #include "level_loader/json_file_loader.h"
+#include "enemy/straight_moving_enemy.h"
 
 namespace sliding_blocks {
 
@@ -56,6 +57,7 @@ void GameScene::LoadAndInitializeLevel(const std::string &level_file_path) {
   slick_floors_ = level_loader_.GetSlickFloors();
   start_points_ = level_loader_.GetStartPoints();
   end_points_ = level_loader_.GetEndPoints();
+  enemies_ = level_loader_.GetEnemies();
 
   for (auto &start_point : start_points_) {
     start_point_id_to_obj_[start_point->GetId()] = start_point;
@@ -148,6 +150,14 @@ void GameScene::UpdateStateIfPlayerCollision(uint32_t elapsed_millis_since_last_
 
   if (player_->IsCollision(start_points_)) {
 
+    // If player was sliding but just landed on non-slick land, they should stop moving (as opposed to
+    // moving to the last clicked destination)
+    if (player_->IsSliding()) {
+      player_->ResetMovement();
+    } else {
+      player_->MoveCharacterStraight(elapsed_millis_since_last_frame);
+    }
+
   } else if (player_->IsCollision(end_points_)) {
 
     auto endpoint = player_->GetCollidingObject<EndPoint *>(end_points_);
@@ -200,12 +210,25 @@ void GameScene::UpdateStateIfPlayerCollision(uint32_t elapsed_millis_since_last_
 
 }
 
+void GameScene::UpdateStateIfEnemyCollision() {
+
+  for (Enemy *enemy : enemies_) {
+    if (enemy->IsCollision(walls_)) {
+      enemy->UpdateIfCollision(*enemy->GetCollidingObject<Surface *>(walls_));
+    }
+
+  }
+
+}
+
 void GameScene::RunSingleIterationLoopBody() {
 
   uint32_t elapsed_millis_since_last_frame = timer_.GetElapsedMilliseconds();
   timer_.StartTimer();
 
   UpdateStateIfPlayerCollision(elapsed_millis_since_last_frame);
+  UpdateStateIfEnemyCollision();
+  for (Enemy *enemy : enemies_) enemy->Move(elapsed_millis_since_last_frame);
 
   SDL_SetRenderDrawColor(renderer_, background_color_.r, background_color_.g, background_color_.b, background_color_.a);
   SDL_RenderClear(renderer_);
@@ -215,7 +238,9 @@ void GameScene::RunSingleIterationLoopBody() {
   for (Surface *wall : walls_) wall->Render();
   for (StartPoint *start_point : start_points_) start_point->Render();
   for (EndPoint *end_point : end_points_) end_point->Render();
+  for (Enemy *enemy : enemies_) enemy->Render();
   player_->Render();
+
   remaining_lives_text_->Render();
   current_stage_text_->Render();
 

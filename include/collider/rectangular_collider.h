@@ -14,6 +14,10 @@ class RectangularCollider {
   // in the actual object and in the collider
   explicit RectangularCollider(Rectangle &rectangle);
   bool IsCollision(RectangularCollider &other);
+  bool IsCollisionThisLeftWithOther(RectangularCollider &other);
+  bool IsCollisionThisRightWithOther(RectangularCollider &other);
+  bool IsCollisionThisTopWithOther(RectangularCollider &other);
+  bool IsCollisionThisBottomWithOther(RectangularCollider &other);
 
   template<typename Container>
   bool IsCollision(Container &container);

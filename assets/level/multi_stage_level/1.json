@@ -2,6 +2,22 @@
   "name": "Stage 1!",
   "width": 500,
   "height": 500,
+  "enemies": [
+    {
+      "type": "straight_moving",
+      "x": 200,
+      "y": 200,
+      "width": 20,
+      "height": 20,
+      "velocity_x": 0.1,
+      "velocity_y": 0.1,
+      "color": {
+        "r": 0,
+        "g": 128,
+        "b": 128
+      }
+    }
+  ],
   "slick_floors": [
     {
       "x": 0,

@@ -41,4 +41,65 @@ bool RectangularCollider::IsCollision(RectangularCollider &other) {
 
 }
 
+bool RectangularCollider::IsCollisionThisTopWithOther(RectangularCollider &other) {
+
+  // Here we take a sliver along the top side of the rectangle - we explicitly shave off the corners
+  Rectangle sliver = Rectangle(rectangle_.GetTopLeftX() + 2,
+                               rectangle_.GetTopLeftY(),
+                               rectangle_.GetWidth() - 4,
+                               1);
+
+  if (RectangularCollider(sliver).IsCollision(other)) {
+    return true;
+  } else {
+    return false;
+  }
+
+}
+
+bool RectangularCollider::IsCollisionThisBottomWithOther(RectangularCollider &other) {
+
+  Rectangle sliver = Rectangle(rectangle_.GetTopLeftX() + 2,
+                               rectangle_.GetTopLeftY() + rectangle_.GetHeight(),
+                               rectangle_.GetWidth() - 4,
+                               1);
+
+  if (RectangularCollider(sliver).IsCollision(other)) {
+    return true;
+  } else {
+    return false;
+  }
+
+}
+
+bool RectangularCollider::IsCollisionThisLeftWithOther(RectangularCollider &other) {
+
+  Rectangle sliver = Rectangle(rectangle_.GetTopLeftX(),
+                               rectangle_.GetTopLeftY() + 2,
+                               1,
+                               rectangle_.GetHeight() - 4);
+
+  if (RectangularCollider(sliver).IsCollision(other)) {
+    return true;
+  } else {
+    return false;
+  }
+
+}
+
+bool RectangularCollider::IsCollisionThisRightWithOther(RectangularCollider &other) {
+
+  Rectangle sliver = Rectangle(rectangle_.GetTopLeftX() + rectangle_.GetWidth(),
+                               rectangle_.GetTopLeftY() + 2,
+                               1,
+                               rectangle_.GetHeight() - 4);
+
+  if (RectangularCollider(sliver).IsCollision(other)) {
+    return true;
+  } else {
+    return false;
+  }
+
+}
+
 }

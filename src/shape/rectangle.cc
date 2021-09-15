@@ -10,19 +10,19 @@ Rectangle::Rectangle(int top_left_x, int top_left_y, int width, int height) {
   height_ = height;
 }
 
-int Rectangle::GetTopLeftX() {
+int Rectangle::GetTopLeftX() const {
   return top_left_x_;
 }
 
-int Rectangle::GetTopLeftY() {
+int Rectangle::GetTopLeftY() const {
   return top_left_y_;
 }
 
-int Rectangle::GetWidth() {
+int Rectangle::GetWidth() const {
   return width_;
 }
 
-int Rectangle::GetHeight() {
+int Rectangle::GetHeight() const {
   return height_;
 }
 
@@ -39,7 +39,7 @@ void Rectangle::SetHeight(int height) {
   height_ = height;
 }
 
-bool Rectangle::IsMouseInside() {
+bool Rectangle::IsMouseInside() const {
 
   int mouse_x, mouse_y = 0;
   SDL_GetMouseState(&mouse_x, &mouse_y);

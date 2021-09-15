@@ -10,11 +10,11 @@ class Rectangle {
   virtual void SetTopLeftPosition(int x, int y);
   void SetWidth(int width);
   void SetHeight(int height);
-  int GetTopLeftX();
-  int GetTopLeftY();
-  int GetWidth();
-  int GetHeight();
-  bool IsMouseInside();
+  int GetTopLeftX() const;
+  int GetTopLeftY() const;
+  int GetWidth() const;
+  int GetHeight() const;
+  bool IsMouseInside() const;
 
  private:
   int top_left_x_;

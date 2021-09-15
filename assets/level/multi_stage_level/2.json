@@ -2,6 +2,8 @@
   "name": "Stage 2...",
   "width": 500,
   "height": 500,
+  "enemies": [
+  ],
   "slick_floors": [
     {
       "x": 0,

@@ -22,11 +22,9 @@ class JsonFileLoader : public LevelLoader {
                               SurfaceType surface_type,
                               const std::string &json_field);
 
-  void LoadStartPointsIntoVector(std::vector<StartPoint *> &vector,
-                                 const std::string &json_field);
-
-  void LoadEndPointsIntoVector(std::vector<EndPoint *> &vector,
-                               const std::string &json_field);
+  void LoadStartPointsIntoVector(std::vector<StartPoint *> &vector);
+  void LoadEndPointsIntoVector(std::vector<EndPoint *> &vector);
+  void LoadEnemiesIntoVector(std::vector<Enemy *> &vector);
 
 };
 

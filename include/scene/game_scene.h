@@ -10,6 +10,7 @@
 #include "level_loader/json_file_loader.h"
 #include "time/timer.h"
 #include "text/text.h"
+#include "enemy/enemy.h"
 
 #ifndef SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
 #define SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
@@ -32,6 +33,7 @@ class GameScene : public Scene {
   void UpdateRemainingLivesText();
   void UpdateCurrentStageText(std::string stage_name);
   void UpdateStateIfPlayerCollision(uint32_t elapsed_millis_since_last_frame);
+  void UpdateStateIfEnemyCollision();
 
   SDL_Color background_color_ = {0x00, 0x00, 0x00, 0xFF}; // black
   Player *player_;
@@ -40,6 +42,8 @@ class GameScene : public Scene {
   std::vector<Surface *> walkable_floors_;
   std::vector<StartPoint *> start_points_;
   std::vector<EndPoint *> end_points_;
+  std::vector<Enemy *> enemies_;
+
   std::map<int, StartPoint *> start_point_id_to_obj_;
   std::map<int, EndPoint *> end_point_id_to_obj_;
   std::string current_level_name_;
