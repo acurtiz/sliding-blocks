@@ -72,20 +72,30 @@ void GameScene::LoadAndInitializeLevel(const std::string &level_file_path) {
   current_level_name_ = level_loader_.GetLevelName();
 
   // Walls implicitly surround every level
-  walls_.push_back(new Surface(-1, 0, 1, level_loader_.GetLevelHeight(), renderer_, WALL)); // bordering left side
-  walls_.push_back(new Surface(level_loader_.GetLevelWidth(),
-                               0,
-                               1,
-                               level_loader_.GetLevelHeight(),
-                               renderer_,
-                               WALL)); // bordering right side
-  walls_.push_back(new Surface(0, -1, level_loader_.GetLevelWidth(), 1, renderer_, WALL)); // bordering top
-  walls_.push_back(new Surface(0,
-                               level_loader_.GetLevelHeight(),
-                               level_loader_.GetLevelWidth(),
-                               1,
-                               renderer_,
-                               WALL)); // bordering bottom
+  walls_.push_back(new Wall(-1,
+                            0,
+                            1,
+                            level_loader_.GetLevelHeight(),
+                            {0xFF, 0x00, 0x00, 0xFF},
+                            renderer_)); // bordering left side
+  walls_.push_back(new Wall(level_loader_.GetLevelWidth(),
+                            0,
+                            1,
+                            level_loader_.GetLevelHeight(),
+                            {0xFF, 0x00, 0x00, 0xFF},
+                            renderer_)); // bordering right side
+  walls_.push_back(new Wall(0,
+                            -1,
+                            level_loader_.GetLevelWidth(),
+                            1,
+                            {0xFF, 0x00, 0x00, 0xFF},
+                            renderer_)); // bordering top
+  walls_.push_back(new Wall(0,
+                            level_loader_.GetLevelHeight(),
+                            level_loader_.GetLevelWidth(),
+                            1,
+                            {0xFF, 0x00, 0x00, 0xFF},
+                            renderer_)); // bordering bottom
 
 }
 
@@ -214,7 +224,7 @@ void GameScene::UpdateStateIfEnemyCollision() {
 
   for (Enemy *enemy : enemies_) {
     if (enemy->IsCollision(walls_)) {
-      enemy->UpdateIfCollision(*enemy->GetCollidingObject<Surface *>(walls_));
+      enemy->UpdateIfCollision(*enemy->GetCollidingObject<Wall *>(walls_));
     }
 
   }
@@ -230,7 +240,11 @@ void GameScene::RunSingleIterationLoopBody() {
   UpdateStateIfEnemyCollision();
   for (Enemy *enemy : enemies_) enemy->Move(elapsed_millis_since_last_frame);
 
-  SDL_SetRenderDrawColor(renderer_, background_color_.r, background_color_.g, background_color_.b, background_color_.a);
+  SDL_SetRenderDrawColor(renderer_,
+                         background_color_.r,
+                         background_color_.g,
+                         background_color_.b,
+                         background_color_.a);
   SDL_RenderClear(renderer_);
 
   for (Surface *walkable_floor : walkable_floors_) walkable_floor->Render();

@@ -11,6 +11,9 @@
 #include "time/timer.h"
 #include "text/text.h"
 #include "enemy/enemy.h"
+#include "environment/slick_floor.h"
+#include "environment/walkable_floor.h"
+#include "environment/wall.h"
 
 #ifndef SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
 #define SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
@@ -37,9 +40,9 @@ class GameScene : public Scene {
 
   SDL_Color background_color_ = {0x00, 0x00, 0x00, 0xFF}; // black
   Player *player_;
-  std::vector<Surface *> walls_;
-  std::vector<Surface *> slick_floors_;
-  std::vector<Surface *> walkable_floors_;
+  std::vector<Wall *> walls_;
+  std::vector<SlickFloor *> slick_floors_;
+  std::vector<WalkableFloor *> walkable_floors_;
   std::vector<StartPoint *> start_points_;
   std::vector<EndPoint *> end_points_;
   std::vector<Enemy *> enemies_;

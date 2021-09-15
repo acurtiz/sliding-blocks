@@ -19,7 +19,7 @@ class JsonFileLoader : public LevelLoader {
 
   template<typename SurfaceClass>
   void LoadSurfacesIntoVector(std::vector<SurfaceClass *> &vector,
-                              SurfaceType surface_type,
+                              SDL_Color color,
                               const std::string &json_field);
 
   void LoadStartPointsIntoVector(std::vector<StartPoint *> &vector);

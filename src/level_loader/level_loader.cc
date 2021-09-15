@@ -6,15 +6,15 @@ LevelLoader::LevelLoader(SDL_Renderer *renderer) {
   renderer_ = renderer;
 }
 
-std::vector<Surface *> LevelLoader::GetWalls() {
+std::vector<Wall *> LevelLoader::GetWalls() {
   return walls_;
 }
 
-std::vector<Surface *> LevelLoader::GetSlickFloors() {
+std::vector<SlickFloor *> LevelLoader::GetSlickFloors() {
   return slick_floors_;
 }
 
-std::vector<Surface *> LevelLoader::GetWalkableFloors() {
+std::vector<WalkableFloor *> LevelLoader::GetWalkableFloors() {
   return walkable_floors_;
 }
 

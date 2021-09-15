@@ -1,4 +1,5 @@
 #include "enemy/straight_moving_enemy.h"
+#include "environment/wall.h"
 
 namespace sliding_blocks {
 
@@ -43,22 +44,18 @@ void StraightMovingEnemy::UpdateIfCollision(RectangularCollider &other) {
   printf("UpdateIfCollision(RectangularCollider &other)\n");
 }
 
-void StraightMovingEnemy::UpdateIfCollision(Surface &other) {
+void StraightMovingEnemy::UpdateIfCollision(Wall &other) {
 
-  if (other.GetType() == WALL) {
+  if (IsCollisionThisBottomWithOther(other) && pixels_to_move_per_milli_y_current_ > 0) {
+    pixels_to_move_per_milli_y_current_ *= -1;
+  } else if (IsCollisionThisTopWithOther(other) && pixels_to_move_per_milli_y_current_ < 0) {
+    pixels_to_move_per_milli_y_current_ *= -1;
+  }
 
-    if (IsCollisionThisBottomWithOther(other) && pixels_to_move_per_milli_y_current_ > 0) {
-      pixels_to_move_per_milli_y_current_ *= -1;
-    } else if (IsCollisionThisTopWithOther(other) && pixels_to_move_per_milli_y_current_ < 0) {
-      pixels_to_move_per_milli_y_current_ *= -1;
-    }
-
-    if (IsCollisionThisRightWithOther(other) && pixels_to_move_per_milli_x_current_ > 0) {
-      pixels_to_move_per_milli_x_current_ *= -1;
-    } else if (IsCollisionThisLeftWithOther(other) && pixels_to_move_per_milli_x_current_ < 0) {
-      pixels_to_move_per_milli_x_current_ *= -1;
-    }
-
+  if (IsCollisionThisRightWithOther(other) && pixels_to_move_per_milli_x_current_ > 0) {
+    pixels_to_move_per_milli_x_current_ *= -1;
+  } else if (IsCollisionThisLeftWithOther(other) && pixels_to_move_per_milli_x_current_ < 0) {
+    pixels_to_move_per_milli_x_current_ *= -1;
   }
 
 }

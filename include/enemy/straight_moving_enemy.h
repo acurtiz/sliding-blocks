@@ -2,6 +2,7 @@
 #include "enemy/enemy.h"
 #include "collider/rectangular_collider.h"
 #include "environment/surface.h"
+#include "environment/wall.h"
 
 #ifndef SLIDINGBLOCKS_INCLUDE_ENEMY_STRAIGHT_MOVING_ENEMY_H_
 #define SLIDINGBLOCKS_INCLUDE_ENEMY_STRAIGHT_MOVING_ENEMY_H_
@@ -22,7 +23,7 @@ class StraightMovingEnemy : public Enemy {
 
   void Reset() override;
   void UpdateIfCollision(RectangularCollider &other) override;
-  void UpdateIfCollision(Surface &other) override;
+  void UpdateIfCollision(Wall &other) override;
   void Move(uint32_t elapsed_millis) override;
   void Render() override;
 

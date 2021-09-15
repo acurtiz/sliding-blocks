@@ -6,25 +6,15 @@
 
 namespace sliding_blocks {
 
-enum SurfaceType {
-  WALL,
-  SLICK_FLOOR,
-  NORMAL_FLOOR,
-  START_POINT,
-  END_POINT
-};
-
 class Surface : public Rectangle, public RectangularCollider {
 
  public:
-  Surface(int top_left_x, int top_left_y, int width, int height, SDL_Renderer *renderer, SurfaceType surface_type);
-  SurfaceType GetType();
+  Surface(int top_left_x, int top_left_y, int width, int height, SDL_Color color, SDL_Renderer *renderer);
   void Render();
 
  private:
-  SDL_Color GetColor();
+  SDL_Color color_;
   SDL_Renderer *renderer_;
-  SurfaceType surface_type_;
 
 };
 

@@ -3,6 +3,9 @@
 #include <boost/format.hpp>
 #include "level_loader/json_file_loader.h"
 #include "environment/surface.h"
+#include "environment/wall.h"
+#include "environment/slick_floor.h"
+#include "environment/walkable_floor.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "enemy/straight_moving_enemy.h"
@@ -25,9 +28,9 @@ void JsonFileLoader::Load(const std::string &file_name) {
 
   document_.Parse(level_string.c_str());
 
-  LoadSurfacesIntoVector(walls_, WALL, "walls");
-  LoadSurfacesIntoVector(slick_floors_, SLICK_FLOOR, "slick_floors");
-  LoadSurfacesIntoVector(walkable_floors_, NORMAL_FLOOR, "walkable_floors");
+  LoadSurfacesIntoVector(walls_, {0xFF, 0x00, 0x00, 0xFF}, "walls");
+  LoadSurfacesIntoVector(slick_floors_, {0x00, 0xFF, 0x00, 0xFF}, "slick_floors");
+  LoadSurfacesIntoVector(walkable_floors_, {0xFF, 0xFF, 0xFF, 0xFF}, "walkable_floors");
   LoadStartPointsIntoVector(start_points_);
   LoadEndPointsIntoVector(end_points_);
   LoadEnemiesIntoVector(enemies_);
@@ -39,7 +42,7 @@ void JsonFileLoader::Load(const std::string &file_name) {
 
 template<typename SurfaceClass>
 void JsonFileLoader::LoadSurfacesIntoVector(std::vector<SurfaceClass *> &vector,
-                                            SurfaceType surface_type,
+                                            SDL_Color color,
                                             const std::string &json_field) {
 
   for (auto &m : document_[json_field.c_str()].GetArray()) {
@@ -50,8 +53,8 @@ void JsonFileLoader::LoadSurfacesIntoVector(std::vector<SurfaceClass *> &vector,
             m.GetObject().FindMember("y")->value.GetInt(),
             m.GetObject().FindMember("width")->value.GetInt(),
             m.GetObject().FindMember("height")->value.GetInt(),
-            renderer_,
-            surface_type));
+            color,
+            renderer_));
   }
 
 }
