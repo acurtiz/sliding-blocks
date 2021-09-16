@@ -59,11 +59,11 @@ void GameScene::LoadAndInitializeLevel(const std::string &level_file_path) {
   end_points_ = level_loader_.GetEndPoints();
   enemies_ = level_loader_.GetEnemies();
 
-  for (auto &start_point : start_points_) {
+  for (auto &start_point: start_points_) {
     start_point_id_to_obj_[start_point->GetId()] = start_point;
   }
 
-  for (auto &end_point : end_points_) {
+  for (auto &end_point: end_points_) {
     end_point_id_to_obj_[end_point->GetId()] = end_point;
   }
 
@@ -156,7 +156,7 @@ void GameScene::UpdateCurrentStageText(std::string stage_name) {
 
 }
 
-void GameScene::UpdateStateIfPlayerCollision(uint32_t elapsed_millis_since_last_frame) {
+void GameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_since_last_frame) {
 
   if (player_->IsCollision(start_points_)) {
 
@@ -220,9 +220,12 @@ void GameScene::UpdateStateIfPlayerCollision(uint32_t elapsed_millis_since_last_
 
 }
 
-void GameScene::UpdateStateIfEnemyCollision() {
+void GameScene::UpdateEnemyStateAndHandleCollision(uint32_t elapsed_millis_since_last_frame) {
 
-  for (Enemy *enemy : enemies_) {
+  for (Enemy *enemy: enemies_) {
+
+    enemy->Move(elapsed_millis_since_last_frame);
+
     if (enemy->IsCollision(walls_)) {
       enemy->UpdateIfCollision(*enemy->GetCollidingObject<Wall *>(walls_));
     }
@@ -236,9 +239,8 @@ void GameScene::RunSingleIterationLoopBody() {
   uint32_t elapsed_millis_since_last_frame = timer_.GetElapsedMilliseconds();
   timer_.StartTimer();
 
-  UpdateStateIfPlayerCollision(elapsed_millis_since_last_frame);
-  UpdateStateIfEnemyCollision();
-  for (Enemy *enemy : enemies_) enemy->Move(elapsed_millis_since_last_frame);
+  UpdatePlayerStateAndHandleCollisions(elapsed_millis_since_last_frame);
+  UpdateEnemyStateAndHandleCollision(elapsed_millis_since_last_frame);
 
   SDL_SetRenderDrawColor(renderer_,
                          background_color_.r,
@@ -247,12 +249,12 @@ void GameScene::RunSingleIterationLoopBody() {
                          background_color_.a);
   SDL_RenderClear(renderer_);
 
-  for (Surface *walkable_floor : walkable_floors_) walkable_floor->Render();
-  for (Surface *slick_floor : slick_floors_) slick_floor->Render();
-  for (Surface *wall : walls_) wall->Render();
-  for (StartPoint *start_point : start_points_) start_point->Render();
-  for (EndPoint *end_point : end_points_) end_point->Render();
-  for (Enemy *enemy : enemies_) enemy->Render();
+  for (Surface *walkable_floor: walkable_floors_) walkable_floor->Render();
+  for (Surface *slick_floor: slick_floors_) slick_floor->Render();
+  for (Surface *wall: walls_) wall->Render();
+  for (StartPoint *start_point: start_points_) start_point->Render();
+  for (EndPoint *end_point: end_points_) end_point->Render();
+  for (Enemy *enemy: enemies_) enemy->Render();
   player_->Render();
 
   remaining_lives_text_->Render();
