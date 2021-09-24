@@ -14,6 +14,7 @@
 #include "environment/slick_floor.h"
 #include "environment/walkable_floor.h"
 #include "environment/wall.h"
+#include "pop_up_menu/death_menu.h"
 
 #ifndef SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
 #define SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
@@ -37,6 +38,8 @@ class GameScene : public Scene {
   void UpdateCurrentStageText(std::string stage_name);
   void UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_since_last_frame);
   void UpdateEnemyStateAndHandleCollision(uint32_t elapsed_millis_since_last_frame);
+
+  bool IsGamePaused();
 
   SDL_Color background_color_ = {0x00, 0x00, 0x00, 0xFF}; // black
   Player *player_;
@@ -62,6 +65,8 @@ class GameScene : public Scene {
   TTF_Font *font_;
   Text *remaining_lives_text_;
   Text *current_stage_text_;
+
+  DeathMenu *death_menu_;
 
 };
 

@@ -23,7 +23,8 @@ GameScene::GameScene(SDL_Renderer *renderer,
       current_stage_text_(nullptr),
       current_level_width_(-1),
       current_level_height_(-1),
-      current_level_name_() {
+      current_level_name_(),
+      death_menu_(nullptr) {
 
   font_ = TTF_OpenFont("assets/font/OpenSans-Regular.ttf", 18);
   if (font_ == nullptr) {
@@ -113,6 +114,12 @@ void GameScene::RunPreLoop() {
   UpdateRemainingLivesText();
   UpdateCurrentStageText(current_level_name_);
 
+  death_menu_ = new DeathMenu(renderer_,
+                              (int) (GetScreenWidth() * 0.1),
+                              (int) (GetScreenHeight() * 0.2),
+                              (int) (GetScreenWidth() * 0.8),
+                              (int) (GetScreenHeight() * 0.6));
+
 }
 
 void GameScene::RunPostLoop() {
@@ -124,11 +131,15 @@ void GameScene::RunPostLoop() {
 
   FreeLevelState();
 
+  delete death_menu_;
+  death_menu_ = nullptr;
+
 }
 
 void GameScene::RunSingleIterationEventHandler(SDL_Event &event) {
 
   player_->HandleEvent(event);
+  death_menu_->RunSingleIterationEventHandler(event);
 
 }
 
@@ -200,8 +211,8 @@ void GameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_sin
 
       printf("Player hit wall thus lost a life! Remaining lives: %d\n", player_->GetLives());
     } else {
+      death_menu_->Open();
       printf("Player died but no remaining lives; exiting!\n");
-      QuitLocal();
     }
 
   } else if (player_->IsCollision(slick_floors_)) {
@@ -234,13 +245,25 @@ void GameScene::UpdateEnemyStateAndHandleCollision(uint32_t elapsed_millis_since
 
 }
 
+bool GameScene::IsGamePaused() {
+
+  if (death_menu_->IsOpened()) {
+    return true;
+  }
+
+  return false;
+
+}
+
 void GameScene::RunSingleIterationLoopBody() {
 
   uint32_t elapsed_millis_since_last_frame = timer_.GetElapsedMilliseconds();
   timer_.StartTimer();
 
-  UpdatePlayerStateAndHandleCollisions(elapsed_millis_since_last_frame);
-  UpdateEnemyStateAndHandleCollision(elapsed_millis_since_last_frame);
+  if (!IsGamePaused()) {
+    UpdatePlayerStateAndHandleCollisions(elapsed_millis_since_last_frame);
+    UpdateEnemyStateAndHandleCollision(elapsed_millis_since_last_frame);
+  }
 
   SDL_SetRenderDrawColor(renderer_,
                          background_color_.r,
@@ -259,6 +282,8 @@ void GameScene::RunSingleIterationLoopBody() {
 
   remaining_lives_text_->Render();
   current_stage_text_->Render();
+
+  death_menu_->RunSingleIterationLoopBody();
 
   SDL_RenderPresent(renderer_);
 

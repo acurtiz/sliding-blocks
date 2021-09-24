@@ -11,7 +11,11 @@ RectangularButton::RectangularButton(int top_left_x,
     : Rectangle(top_left_x, top_left_y, width, height),
       label_(label),
       renderer_(renderer),
-      current_color_(&color_default_) {}
+      current_color_(&color_default_) {
+
+  SetTopLeftPositionButton(top_left_x, top_left_y);
+
+}
 
 ButtonEvent RectangularButton::HandleEvent(SDL_Event *event) {
 
@@ -42,7 +46,7 @@ ButtonEvent RectangularButton::HandleEvent(SDL_Event *event) {
 
 }
 
-void RectangularButton::SetTopLeftPosition(int top_left_x, int top_left_y) {
+void RectangularButton::SetTopLeftPositionButton(int top_left_x, int top_left_y) {
 
   Rectangle::SetTopLeftPosition(top_left_x, top_left_y);
 
@@ -66,6 +70,10 @@ void RectangularButton::SetTopLeftPosition(int top_left_x, int top_left_y) {
 
   label_->SetTopLeftPosition(label_top_left_x, label_top_left_y);
 
+}
+
+void RectangularButton::SetTopLeftPosition(int top_left_x, int top_left_y) {
+  SetTopLeftPositionButton(top_left_x, top_left_y);
 }
 
 void RectangularButton::Render() {

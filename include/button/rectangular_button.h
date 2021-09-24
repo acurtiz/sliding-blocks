@@ -22,6 +22,9 @@ class RectangularButton : public Rectangle {
   void Render();
 
  private:
+  // We need to set the position during object construction - to avoid calling a virtual member from a constructor,
+  // we introduce this redundant non-virtual method
+  void SetTopLeftPositionButton(int top_left_x, int top_left_y);
   SDL_Renderer *renderer_;
   Text *label_;
   const SDL_Color *current_color_;
