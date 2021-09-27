@@ -2,24 +2,27 @@
 
 namespace sliding_blocks {
 
-LivingUnit::LivingUnit(int lives) {
-  lives_ = lives;
-}
+LivingUnit::LivingUnit(int lives)
+    : starting_lives_(lives), remaining_lives_(lives) {}
 
 void LivingUnit::SetLives(int lives) {
-  lives_ = lives;
+  remaining_lives_ = lives;
 }
 
-int LivingUnit::GetLives() {
-  return lives_;
+int LivingUnit::GetLives() const {
+  return remaining_lives_;
 }
 
 void LivingUnit::DecrementLives() {
-  lives_ -= 1;
+  remaining_lives_ -= 1;
 }
 
-bool LivingUnit::HasRemainingLives() {
-  return lives_ > 0;
+bool LivingUnit::HasRemainingLives() const {
+  return remaining_lives_ > 0;
+}
+
+void LivingUnit::ResetLives() {
+  remaining_lives_ = starting_lives_;
 }
 
 }

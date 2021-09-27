@@ -11,7 +11,7 @@ class TitleScene : public Scene {
 
  public:
   explicit TitleScene(Game &game);
-  ~TitleScene();
+  ~TitleScene() override;
   void RunPreLoop() override;
   void RunPostLoop() override;
   void RunSingleIterationEventHandler(SDL_Event &event) override;

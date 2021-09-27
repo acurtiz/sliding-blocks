@@ -8,8 +8,11 @@
 
 namespace sliding_blocks {
 
-DeathMenu::DeathMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int width, int height, Game &game)
+DeathMenu::DeathMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int width, int height, Game &game,
+                     std::function<void()> main_menu_callback, std::function<void()> retry_callback)
     : PopUpMenu(renderer, top_left_x, top_left_y, width, height, {0x00, 0x00, 0x00, 0xFF}, game),
+      main_menu_callback_(main_menu_callback),
+      retry_callback_(retry_callback),
       renderer_(renderer),
       menu_title_(nullptr),
       font_(nullptr),
@@ -49,20 +52,25 @@ DeathMenu::DeathMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int
 }
 
 DeathMenu::~DeathMenu() {
+
   delete menu_title_;
+  delete label_main_menu_;
+  delete label_retry_;
+  delete button_main_menu_;
+  delete button_retry_;
+  TTF_CloseFont(font_);
 
 }
 
 void DeathMenu::RunSingleIterationEventHandlerMenuContents(SDL_Event &event) {
 
   ButtonEvent event_main_menu_button = button_main_menu_->HandleEvent(&event);
-  if (event_main_menu_button == PRESSED) {
-    game_.SwitchScene(typeid(TitleScene));
-  }
-
   ButtonEvent event_retry_button = button_retry_->HandleEvent(&event);
-  if (event_retry_button == PRESSED) {
 
+  if (event_main_menu_button == PRESSED) {
+    main_menu_callback_();
+  } else if (event_retry_button == PRESSED) {
+    retry_callback_();
   }
 
 }

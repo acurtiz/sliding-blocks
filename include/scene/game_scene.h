@@ -25,7 +25,7 @@ class GameScene : public Scene {
 
  public:
   explicit GameScene(Game &game);
-  ~GameScene();
+  ~GameScene() override;
   void RunPreLoop() override;
   void RunPostLoop() override;
   void RunSingleIterationEventHandler(SDL_Event &event) override;

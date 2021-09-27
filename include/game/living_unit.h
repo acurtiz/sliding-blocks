@@ -8,12 +8,14 @@ class LivingUnit {
  public:
   explicit LivingUnit(int lives);
   void SetLives(int lives);
-  int GetLives();
+  int GetLives() const;
   void DecrementLives();
-  bool HasRemainingLives();
+  bool HasRemainingLives() const;
+  void ResetLives();
 
  private:
-  int lives_;
+  int remaining_lives_;
+  const int starting_lives_;
 
 };
 

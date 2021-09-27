@@ -1,6 +1,7 @@
 #ifndef SLIDINGBLOCKS_INCLUDE_POP_UP_MENU_DEATH_MENU_H_
 #define SLIDINGBLOCKS_INCLUDE_POP_UP_MENU_DEATH_MENU_H_
 
+#include <functional>
 #include <SDL2_ttf/SDL_ttf.h>
 #include "pop_up_menu/pop_up_menu.h"
 #include "button/rectangular_button.h"
@@ -11,10 +12,19 @@ namespace sliding_blocks {
 class DeathMenu : public PopUpMenu {
 
  public:
-  DeathMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int width, int height, Game &game);
+  DeathMenu(SDL_Renderer *renderer,
+            int top_left_x,
+            int top_left_y,
+            int width,
+            int height,
+            Game &game,
+            std::function<void()> main_menu_callback,
+            std::function<void()> retry_callback);
   ~DeathMenu();
 
  private:
+  std::function<void()> main_menu_callback_;
+  std::function<void()> retry_callback_;
   void RunSingleIterationEventHandlerMenuContents(SDL_Event &event) override;
   void RunSingleIterationLoopBodyMenuContents() override;
   SDL_Renderer *renderer_;

@@ -118,8 +118,20 @@ void GameScene::RunPreLoop() {
                               (int) (game_.GetScreenHeight() * 0.2),
                               (int) (game_.GetScreenWidth() * 0.8),
                               (int) (game_.GetScreenHeight() * 0.6),
-                              game_);
+                              game_,
 
+                              [this] {
+                                death_menu_->Close();
+                                game_.SwitchScene(typeid(TitleScene));
+                              },
+                              [this] {
+                                death_menu_->Close();
+                                player_->SetTopLeftPosition(start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
+                                                            start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
+                                player_->ResetLives();
+                                UpdateRemainingLivesText();
+                              }
+  );
 }
 
 void GameScene::RunPostLoop() {
@@ -205,6 +217,7 @@ void GameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_sin
 
     if (player_->HasRemainingLives()) {
       player_->DecrementLives();
+      player_->ResetMovement();
       UpdateRemainingLivesText();
       player_->SetTopLeftPosition(start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
                                   start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
