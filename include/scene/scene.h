@@ -12,8 +12,6 @@ class Scene {
  public:
   explicit Scene(Game &game);
   virtual ~Scene();
-  virtual void RunPreLoop() = 0;
-  virtual void RunPostLoop() = 0;
   virtual void RunSingleIterationEventHandler(SDL_Event &event) = 0;
   virtual void RunSingleIterationLoopBody() = 0;
 

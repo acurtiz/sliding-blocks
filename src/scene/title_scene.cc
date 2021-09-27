@@ -19,16 +19,6 @@ TitleScene::TitleScene(Game &game)
     throw std::runtime_error(boost::str(boost::format("Failed to load font, error: %1%\n") % TTF_GetError()));
   }
 
-}
-
-TitleScene::~TitleScene() {
-
-  TTF_CloseFont(title_font_);
-
-}
-
-void TitleScene::RunPreLoop() {
-
   title_ = new Text(game_.GetRenderer(), title_font_, {0xFF, 0xFF, 0xFF, 0xFF}, "Sliding Blocks!", -1);
   title_->SetTopLeftPosition(game_.GetScreenWidth() / 2 - title_->GetWidth() / 2,
                              100);
@@ -61,13 +51,15 @@ void TitleScene::RunPreLoop() {
 
 }
 
-void TitleScene::RunPostLoop() {
+TitleScene::~TitleScene() {
 
   delete title_;
   delete start_button_;
   delete start_button_label_;
   delete quit_button_;
   delete quit_button_label_;
+
+  TTF_CloseFont(title_font_);
 
 }
 

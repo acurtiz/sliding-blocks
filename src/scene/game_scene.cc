@@ -30,9 +30,45 @@ GameScene::GameScene(Game &game)
     throw std::runtime_error(boost::str(boost::format("Failed to load font, error: %1%\n") % TTF_GetError()));
   }
 
+  std::string initial_level = "multi_stage_level/1.json";
+
+  FreeLevelState();
+  LoadAndInitializeLevel(initial_level);
+
+  player_ = new Player(game_.GetRenderer(), 10, 10,
+                       start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
+                       start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
+
+  UpdateRemainingLivesText();
+  UpdateCurrentStageText(current_level_name_);
+
+  death_menu_ = new DeathMenu(game_,
+                              [this] {
+                                death_menu_->Close();
+                                game_.SwitchScene(typeid(TitleScene));
+                              },
+                              [this] {
+                                death_menu_->Close();
+                                player_->SetTopLeftPosition(start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
+                                                            start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
+                                player_->ResetLives();
+                                UpdateRemainingLivesText();
+                              }
+  );
+
 }
 
 GameScene::~GameScene() {
+
+  delete remaining_lives_text_;
+  delete current_stage_text_;
+  delete player_;
+  player_ = nullptr;
+
+  FreeLevelState();
+
+  delete death_menu_;
+  death_menu_ = nullptr;
 
   TTF_CloseFont(font_);
 
@@ -96,55 +132,6 @@ void GameScene::LoadAndInitializeLevel(const std::string &level_file_path) {
                             1,
                             {0xFF, 0x00, 0x00, 0xFF},
                             game_.GetRenderer())); // bordering bottom
-
-}
-
-void GameScene::RunPreLoop() {
-
-  std::string initial_level = "multi_stage_level/1.json";
-
-  FreeLevelState();
-  LoadAndInitializeLevel(initial_level);
-
-  player_ = new Player(game_.GetRenderer(), 10, 10,
-                       start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
-                       start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
-
-  UpdateRemainingLivesText();
-  UpdateCurrentStageText(current_level_name_);
-
-  death_menu_ = new DeathMenu(game_.GetRenderer(),
-                              (int) (game_.GetScreenWidth() * 0.1),
-                              (int) (game_.GetScreenHeight() * 0.2),
-                              (int) (game_.GetScreenWidth() * 0.8),
-                              (int) (game_.GetScreenHeight() * 0.6),
-                              game_,
-
-                              [this] {
-                                death_menu_->Close();
-                                game_.SwitchScene(typeid(TitleScene));
-                              },
-                              [this] {
-                                death_menu_->Close();
-                                player_->SetTopLeftPosition(start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
-                                                            start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
-                                player_->ResetLives();
-                                UpdateRemainingLivesText();
-                              }
-  );
-}
-
-void GameScene::RunPostLoop() {
-
-  delete remaining_lives_text_;
-  delete current_stage_text_;
-  delete player_;
-  player_ = nullptr;
-
-  FreeLevelState();
-
-  delete death_menu_;
-  death_menu_ = nullptr;
 
 }
 

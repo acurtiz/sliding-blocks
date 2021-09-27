@@ -1,19 +1,24 @@
 #include <SDL2_ttf/SDL_ttf.h>
 #include <boost/format.hpp>
+#include <utility>
 #include "pop_up_menu/death_menu.h"
 #include "button/rectangular_button.h"
 #include "button/button_event.h"
 #include "text/text.h"
-#include "scene/title_scene.h"
 
 namespace sliding_blocks {
 
-DeathMenu::DeathMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int width, int height, Game &game,
-                     std::function<void()> main_menu_callback, std::function<void()> retry_callback)
-    : PopUpMenu(renderer, top_left_x, top_left_y, width, height, {0x00, 0x00, 0x00, 0xFF}, game),
-      main_menu_callback_(main_menu_callback),
-      retry_callback_(retry_callback),
-      renderer_(renderer),
+DeathMenu::DeathMenu(Game &game,
+                     std::function<void()> main_menu_callback,
+                     std::function<void()> retry_callback)
+    : PopUpMenu((int) (game.GetScreenWidth() * 0.1),
+                (int) (game.GetScreenHeight() * 0.2),
+                (int) (game.GetScreenWidth() * 0.8),
+                (int) (game.GetScreenHeight() * 0.6),
+                {0x00, 0x00, 0x00, 0xFF},
+                game),
+      main_menu_callback_(std::move(main_menu_callback)),
+      retry_callback_(std::move(retry_callback)),
       menu_title_(nullptr),
       font_(nullptr),
       label_main_menu_(nullptr),
@@ -26,12 +31,12 @@ DeathMenu::DeathMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int
     throw std::runtime_error(boost::str(boost::format("Failed to load font, error: %1%\n") % TTF_GetError()));
   }
 
-  menu_title_ = new Text(renderer_, font_, {0xFF, 0xFF, 0xFF, 0xFF}, "Out of lives!");
+  menu_title_ = new Text(game.GetRenderer(), font_, {0xFF, 0xFF, 0xFF, 0xFF}, "Out of lives!");
   menu_title_->SetTopLeftPosition(GetTopLeftX() + GetWidth() / 2 - menu_title_->GetWidth() / 2, GetTopLeftY() + 50);
-  label_main_menu_ = new Text(renderer_, font_, {0, 0, 0, 0xFF}, "Main Menu");
-  label_retry_ = new Text(renderer_, font_, {0, 0, 0, 0xFF}, "Retry");
+  label_main_menu_ = new Text(game.GetRenderer(), font_, {0, 0, 0, 0xFF}, "Main Menu");
+  label_retry_ = new Text(game.GetRenderer(), font_, {0, 0, 0, 0xFF}, "Retry");
 
-  int button_width = width / 2;
+  int button_width = GetWidth() / 2;
   int button_height = 75;
   int vertical_distance_between_buttons = 25;
   button_main_menu_ = new RectangularButton(GetTopLeftX() + GetWidth() / 2 - button_width / 2,
@@ -40,14 +45,14 @@ DeathMenu::DeathMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int
                                             button_width,
                                             button_height,
                                             label_main_menu_,
-                                            renderer_);
+                                            game.GetRenderer());
   button_retry_ = new RectangularButton(button_main_menu_->GetTopLeftX(),
                                         button_main_menu_->GetTopLeftY() + button_main_menu_->GetHeight()
                                             + vertical_distance_between_buttons,
                                         button_width,
                                         button_height,
                                         label_retry_,
-                                        renderer_);
+                                        game.GetRenderer());
 
 }
 

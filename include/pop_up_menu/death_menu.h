@@ -12,12 +12,7 @@ namespace sliding_blocks {
 class DeathMenu : public PopUpMenu {
 
  public:
-  DeathMenu(SDL_Renderer *renderer,
-            int top_left_x,
-            int top_left_y,
-            int width,
-            int height,
-            Game &game,
+  DeathMenu(Game &game,
             std::function<void()> main_menu_callback,
             std::function<void()> retry_callback);
   ~DeathMenu();
@@ -27,7 +22,6 @@ class DeathMenu : public PopUpMenu {
   std::function<void()> retry_callback_;
   void RunSingleIterationEventHandlerMenuContents(SDL_Event &event) override;
   void RunSingleIterationLoopBodyMenuContents() override;
-  SDL_Renderer *renderer_;
   Text *menu_title_;
   TTF_Font *font_;
   Text *label_main_menu_;

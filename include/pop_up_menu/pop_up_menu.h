@@ -10,7 +10,7 @@ namespace sliding_blocks {
 class PopUpMenu : public Rectangle {
 
  public:
-  PopUpMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int width, int height, SDL_Color color, Game &game);
+  PopUpMenu(int top_left_x, int top_left_y, int width, int height, SDL_Color color, Game &game);
   void Open();
   void Close();
   bool IsOpened() const;
@@ -26,7 +26,6 @@ class PopUpMenu : public Rectangle {
   virtual void RunSingleIterationEventHandlerMenuContents(SDL_Event &event) = 0;
   bool menu_is_opened_;
   SDL_Color color_;
-  SDL_Renderer *renderer_;
 
 };
 

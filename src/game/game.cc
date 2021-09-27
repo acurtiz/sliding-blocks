@@ -7,7 +7,14 @@
 
 namespace sliding_blocks {
 
-Game::Game() {
+Game::Game() :
+    scene_current_(nullptr),
+    scene_next_(nullptr),
+    screen_width_(500),
+    screen_height_(540),
+    window_(nullptr),
+    renderer_(nullptr),
+    global_quit_(false) {
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
     throw std::runtime_error(
@@ -106,9 +113,7 @@ void Game::Run() {
 void Game::LoadScenes() {
 
   auto *title_scene = new TitleScene(*this);
-  title_scene->RunPreLoop();
   auto *game_scene = new GameScene(*this);
-  game_scene->RunPreLoop();
   type_to_scene_map_[typeid(TitleScene)] = title_scene;
   type_to_scene_map_[typeid(GameScene)] = game_scene;
 
@@ -117,7 +122,6 @@ void Game::LoadScenes() {
 void Game::UnloadScenes() {
 
   for (auto &entry: type_to_scene_map_) {
-    entry.second->RunPostLoop();
     delete entry.second;
   }
 

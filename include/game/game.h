@@ -27,11 +27,11 @@ class Game {
   std::map<std::type_index, Scene *> type_to_scene_map_;
   Scene *scene_current_;
   Scene *scene_next_;
-  const int screen_width_ = 500;
-  const int screen_height_ = 540;
-  SDL_Window *window_ = nullptr;
-  SDL_Renderer *renderer_ = nullptr;
-  bool global_quit_ = false;
+  const int screen_width_;
+  const int screen_height_;
+  SDL_Window *window_;
+  SDL_Renderer *renderer_;
+  bool global_quit_;
 
 };
 
