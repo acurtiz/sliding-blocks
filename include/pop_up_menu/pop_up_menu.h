@@ -3,18 +3,22 @@
 
 #include <SDL2/SDL.h>
 #include "shape/rectangle.h"
+#include "game/game.h"
 
 namespace sliding_blocks {
 
 class PopUpMenu : public Rectangle {
 
  public:
-  PopUpMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int width, int height, SDL_Color color);
+  PopUpMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int width, int height, SDL_Color color, Game &game);
   void Open();
   void Close();
   bool IsOpened() const;
   void RunSingleIterationEventHandler(SDL_Event &event);
   void RunSingleIterationLoopBody();
+
+ protected:
+  Game &game_;
 
  private:
   void Render();

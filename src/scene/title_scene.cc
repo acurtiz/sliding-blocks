@@ -2,11 +2,12 @@
 #include <boost/format.hpp>
 #include "scene/title_scene.h"
 #include "scene/game_scene.h"
+#include "game/game.h"
 
 namespace sliding_blocks {
 
-TitleScene::TitleScene(SDL_Renderer *renderer, SDL_Window *window, bool &global_quit)
-    : Scene(renderer, window, global_quit),
+TitleScene::TitleScene(Game &game)
+    : Scene(game),
       title_(nullptr),
       start_button_label_(nullptr),
       start_button_(nullptr),
@@ -28,12 +29,12 @@ TitleScene::~TitleScene() {
 
 void TitleScene::RunPreLoop() {
 
-  title_ = new Text(renderer_, title_font_, {0xFF, 0xFF, 0xFF, 0xFF}, "Sliding Blocks!", -1);
-  title_->SetTopLeftPosition(GetScreenWidth() / 2 - title_->GetWidth() / 2,
+  title_ = new Text(game_.GetRenderer(), title_font_, {0xFF, 0xFF, 0xFF, 0xFF}, "Sliding Blocks!", -1);
+  title_->SetTopLeftPosition(game_.GetScreenWidth() / 2 - title_->GetWidth() / 2,
                              100);
 
-  start_button_label_ = new Text(renderer_, title_font_, {0xFF, 0xFF, 0xFF, 0xFF}, "Begin", -1);
-  quit_button_label_ = new Text(renderer_, title_font_, {0xFF, 0xFF, 0xFF, 0xFF}, "Exit", -1);
+  start_button_label_ = new Text(game_.GetRenderer(), title_font_, {0xFF, 0xFF, 0xFF, 0xFF}, "Begin", -1);
+  quit_button_label_ = new Text(game_.GetRenderer(), title_font_, {0xFF, 0xFF, 0xFF, 0xFF}, "Exit", -1);
 
   int button_width = start_button_label_->GetWidth() > quit_button_label_->GetWidth()
                      ? start_button_label_->GetWidth() + 50 : quit_button_label_->GetWidth() + 50;
@@ -45,8 +46,8 @@ void TitleScene::RunPreLoop() {
                                         button_width,
                                         button_height,
                                         start_button_label_,
-                                        renderer_);
-  start_button_->SetTopLeftPosition(GetScreenWidth() / 2 - start_button_->GetWidth() / 2,
+                                        game_.GetRenderer());
+  start_button_->SetTopLeftPosition(game_.GetScreenWidth() / 2 - start_button_->GetWidth() / 2,
                                     title_->GetTopLeftY() + title_->GetHeight() + 20);
 
   quit_button_ = new RectangularButton(0,
@@ -54,8 +55,8 @@ void TitleScene::RunPreLoop() {
                                        button_width,
                                        button_height,
                                        quit_button_label_,
-                                       renderer_);
-  quit_button_->SetTopLeftPosition(GetScreenWidth() / 2 - quit_button_->GetWidth() / 2,
+                                       game_.GetRenderer());
+  quit_button_->SetTopLeftPosition(game_.GetScreenWidth() / 2 - quit_button_->GetWidth() / 2,
                                    start_button_->GetTopLeftY() + start_button_->GetHeight() + 20);
 
 }
@@ -73,25 +74,24 @@ void TitleScene::RunPostLoop() {
 void TitleScene::RunSingleIterationEventHandler(SDL_Event &event) {
 
   if (start_button_->HandleEvent(&event) == PRESSED) {
-    GameScene game_scene(renderer_, window_, global_quit_);
-    game_scene.Run();
+    game_.SwitchScene(typeid(GameScene));
   }
 
   if (quit_button_->HandleEvent(&event) == PRESSED) {
-    QuitGlobal();
+    game_.Quit();
   }
 
 }
 
 void TitleScene::RunSingleIterationLoopBody() {
 
-  SDL_SetRenderDrawColor(renderer_, 0x00, 0x00, 0x00, 0xFF);
-  SDL_RenderClear(renderer_);
+  SDL_SetRenderDrawColor(game_.GetRenderer(), 0x00, 0x00, 0x00, 0xFF);
+  SDL_RenderClear(game_.GetRenderer());
 
   title_->Render();
   start_button_->Render();
   quit_button_->Render();
-  SDL_RenderPresent(renderer_);
+  SDL_RenderPresent(game_.GetRenderer());
 
 }
 

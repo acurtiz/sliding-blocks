@@ -4,11 +4,12 @@
 #include "button/rectangular_button.h"
 #include "button/button_event.h"
 #include "text/text.h"
+#include "scene/title_scene.h"
 
 namespace sliding_blocks {
 
-DeathMenu::DeathMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int width, int height)
-    : PopUpMenu(renderer, top_left_x, top_left_y, width, height, {0x00, 0x00, 0x00, 0xFF}),
+DeathMenu::DeathMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int width, int height, Game &game)
+    : PopUpMenu(renderer, top_left_x, top_left_y, width, height, {0x00, 0x00, 0x00, 0xFF}, game),
       renderer_(renderer),
       menu_title_(nullptr),
       font_(nullptr),
@@ -55,7 +56,14 @@ DeathMenu::~DeathMenu() {
 void DeathMenu::RunSingleIterationEventHandlerMenuContents(SDL_Event &event) {
 
   ButtonEvent event_main_menu_button = button_main_menu_->HandleEvent(&event);
+  if (event_main_menu_button == PRESSED) {
+    game_.SwitchScene(typeid(TitleScene));
+  }
+
   ButtonEvent event_retry_button = button_retry_->HandleEvent(&event);
+  if (event_retry_button == PRESSED) {
+
+  }
 
 }
 

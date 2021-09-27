@@ -42,21 +42,101 @@ Game::Game() {
     );
   }
 
+  LoadScenes();
+
 }
 
 Game::~Game() {
 
+  UnloadScenes();
   SDL_DestroyWindow(window_);
   window_ = nullptr;
   SDL_Quit();
 
 }
 
+void Game::SwitchScene(std::type_index scene_type) {
+
+  auto scene_to_switch_to = type_to_scene_map_.find(scene_type);
+  if (scene_to_switch_to == type_to_scene_map_.end()) {
+    throw std::runtime_error("Scene not found\n");
+  }
+
+  scene_next_ = scene_to_switch_to->second;
+
+}
+
 void Game::Run() {
 
-  TitleScene title_scene = TitleScene(renderer_, window_, global_quit_);
-  title_scene.Run();
+  scene_current_ = type_to_scene_map_[typeid(TitleScene)];
 
+  SDL_Event event;
+
+  while (!global_quit_) {
+
+    if (scene_next_ != nullptr) {
+      scene_current_ = scene_next_;
+      scene_next_ = nullptr;
+    }
+
+    while (SDL_PollEvent(&event)) {
+
+      if (global_quit_) {
+        return;
+      }
+
+      if (event.type == SDL_QUIT) {
+        global_quit_ = true;
+      }
+
+      scene_current_->RunSingleIterationEventHandler(event);
+    }
+
+    if (global_quit_) {
+      return;
+    }
+
+    scene_current_->RunSingleIterationLoopBody();
+
+    SDL_Delay(15);
+  }
+
+}
+
+void Game::LoadScenes() {
+
+  auto *title_scene = new TitleScene(*this);
+  title_scene->RunPreLoop();
+  auto *game_scene = new GameScene(*this);
+  game_scene->RunPreLoop();
+  type_to_scene_map_[typeid(TitleScene)] = title_scene;
+  type_to_scene_map_[typeid(GameScene)] = game_scene;
+
+}
+
+void Game::UnloadScenes() {
+
+  for (auto &entry: type_to_scene_map_) {
+    entry.second->RunPostLoop();
+    delete entry.second;
+  }
+
+}
+
+void Game::Quit() {
+  global_quit_ = true;
+}
+
+int Game::GetScreenHeight() const {
+  return screen_height_;
+}
+
+int Game::GetScreenWidth() const {
+  return screen_width_;
+}
+
+SDL_Renderer *Game::GetRenderer() const {
+  return renderer_;
 }
 
 }

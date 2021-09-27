@@ -1,3 +1,6 @@
+#ifndef SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
+#define SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
+
 #include <vector>
 #include <map>
 #include <SDL2/SDL.h>
@@ -16,22 +19,19 @@
 #include "environment/wall.h"
 #include "pop_up_menu/death_menu.h"
 
-#ifndef SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
-#define SLIDINGBLOCKS_INCLUDE_SCENE_GAME_SCENE_H_
-
 namespace sliding_blocks {
 
 class GameScene : public Scene {
 
  public:
-  GameScene(SDL_Renderer *renderer, SDL_Window *window, bool &global_quit);
+  explicit GameScene(Game &game);
   ~GameScene();
-
- private:
   void RunPreLoop() override;
   void RunPostLoop() override;
   void RunSingleIterationEventHandler(SDL_Event &event) override;
   void RunSingleIterationLoopBody() override;
+
+ private:
   void FreeLevelState();
   void LoadAndInitializeLevel(const std::string &level_file_path);
   void UpdateRemainingLivesText();

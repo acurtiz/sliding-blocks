@@ -1,36 +1,26 @@
-#include <SDL2/SDL.h>
-#include "game/game.h"
-
 #ifndef SLINDINGBLOCKS_INCLUDE_SCENE_SCENE_H_
 #define SLINDINGBLOCKS_INCLUDE_SCENE_SCENE_H_
 
+#include <SDL2/SDL.h>
+
 namespace sliding_blocks {
+
+class Game;
 
 class Scene {
 
  public:
-  Scene(SDL_Renderer *renderer, SDL_Window *window, bool &global_quit);
-  ~Scene();
-  void Run();
-
- protected:
-  void QuitLocal();
-  void QuitGlobal();
-  int GetScreenHeight();
-  int GetScreenWidth();
-  SDL_Renderer *renderer_;
-  SDL_Window *window_;
-  bool &global_quit_;
-  bool local_quit_;
-
- private:
+  explicit Scene(Game &game);
+  virtual ~Scene();
   virtual void RunPreLoop() = 0;
   virtual void RunPostLoop() = 0;
   virtual void RunSingleIterationEventHandler(SDL_Event &event) = 0;
   virtual void RunSingleIterationLoopBody() = 0;
-  int screen_height_;
-  int screen_width_;
 
+ protected:
+  Game &game_;
+
+ private:
   SDL_Color background_color_ = {0xFF, 0x7F, 0x50, 0xFF};
 
 };

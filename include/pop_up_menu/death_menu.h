@@ -11,7 +11,7 @@ namespace sliding_blocks {
 class DeathMenu : public PopUpMenu {
 
  public:
-  DeathMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int width, int height);
+  DeathMenu(SDL_Renderer *renderer, int top_left_x, int top_left_y, int width, int height, Game &game);
   ~DeathMenu();
 
  private:

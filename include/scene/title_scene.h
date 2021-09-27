@@ -1,16 +1,16 @@
+#ifndef SLIDINGBLOCKS_INCLUDE_SCENE_TITLE_SCENE_H_
+#define SLIDINGBLOCKS_INCLUDE_SCENE_TITLE_SCENE_H_
+
 #include "scene/scene.h"
 #include "text/text.h"
 #include "button/rectangular_button.h"
-
-#ifndef SLIDINGBLOCKS_INCLUDE_SCENE_TITLE_SCENE_H_
-#define SLIDINGBLOCKS_INCLUDE_SCENE_TITLE_SCENE_H_
 
 namespace sliding_blocks {
 
 class TitleScene : public Scene {
 
  public:
-  TitleScene(SDL_Renderer *renderer, SDL_Window *window, bool &global_quit);
+  explicit TitleScene(Game &game);
   ~TitleScene();
   void RunPreLoop() override;
   void RunPostLoop() override;
