@@ -12,7 +12,7 @@ namespace sliding_blocks {
 class DeathMenu : public PopUpMenu {
 
  public:
-  DeathMenu(Game &game,
+  DeathMenu(GameComponent &game_component,
             std::function<void()> main_menu_callback,
             std::function<void()> retry_callback);
   ~DeathMenu();

@@ -3,20 +3,20 @@
 #include <utility>
 #include "pop_up_menu/death_menu.h"
 #include "button/rectangular_button.h"
-#include "button/button_event.h"
+
 #include "text/text.h"
 
 namespace sliding_blocks {
 
-DeathMenu::DeathMenu(Game &game,
+DeathMenu::DeathMenu(GameComponent &game_component,
                      std::function<void()> main_menu_callback,
                      std::function<void()> retry_callback)
-    : PopUpMenu((int) (game.GetScreenWidth() * 0.1),
-                (int) (game.GetScreenHeight() * 0.2),
-                (int) (game.GetScreenWidth() * 0.8),
-                (int) (game.GetScreenHeight() * 0.6),
+    : PopUpMenu((int) (game_component.GetScreenWidth() * 0.1),
+                (int) (game_component.GetScreenHeight() * 0.2),
+                (int) (game_component.GetScreenWidth() * 0.8),
+                (int) (game_component.GetScreenHeight() * 0.6),
                 {0x00, 0x00, 0x00, 0xFF},
-                game),
+                game_component),
       main_menu_callback_(std::move(main_menu_callback)),
       retry_callback_(std::move(retry_callback)),
       menu_title_(nullptr),
@@ -31,10 +31,10 @@ DeathMenu::DeathMenu(Game &game,
     throw std::runtime_error(boost::str(boost::format("Failed to load font, error: %1%\n") % TTF_GetError()));
   }
 
-  menu_title_ = new Text(game.GetRenderer(), font_, {0xFF, 0xFF, 0xFF, 0xFF}, "Out of lives!");
+  menu_title_ = new Text(GetRenderer(), font_, {0xFF, 0xFF, 0xFF, 0xFF}, "Out of lives!");
   menu_title_->SetTopLeftPosition(GetTopLeftX() + GetWidth() / 2 - menu_title_->GetWidth() / 2, GetTopLeftY() + 50);
-  label_main_menu_ = new Text(game.GetRenderer(), font_, {0, 0, 0, 0xFF}, "Main Menu");
-  label_retry_ = new Text(game.GetRenderer(), font_, {0, 0, 0, 0xFF}, "Retry");
+  label_main_menu_ = new Text(GetRenderer(), font_, {0, 0, 0, 0xFF}, "Main Menu");
+  label_retry_ = new Text(GetRenderer(), font_, {0, 0, 0, 0xFF}, "Retry");
 
   int button_width = GetWidth() / 2;
   int button_height = 75;
@@ -45,14 +45,14 @@ DeathMenu::DeathMenu(Game &game,
                                             button_width,
                                             button_height,
                                             label_main_menu_,
-                                            game.GetRenderer());
+                                            *this);
   button_retry_ = new RectangularButton(button_main_menu_->GetTopLeftX(),
                                         button_main_menu_->GetTopLeftY() + button_main_menu_->GetHeight()
                                             + vertical_distance_between_buttons,
                                         button_width,
                                         button_height,
                                         label_retry_,
-                                        game.GetRenderer());
+                                        *this);
 
 }
 

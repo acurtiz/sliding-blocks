@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include "pop_up_menu/pop_up_menu.h"
-#include "game/game.h"
+#include "game/game_component.h"
 
 namespace sliding_blocks {
 
@@ -9,9 +9,9 @@ PopUpMenu::PopUpMenu(int top_left_x,
                      int width,
                      int height,
                      SDL_Color color,
-                     Game &game)
+                     GameComponent &game_component)
     : Rectangle(top_left_x, top_left_y, width, height),
-      game_(game),
+      GameComponent(game_component),
       menu_is_opened_(false),
       color_(color) {}
 
@@ -48,19 +48,19 @@ void PopUpMenu::Render() {
 
   // Get previous color
   SDL_Color previous_color;
-  SDL_GetRenderDrawColor(game_.GetRenderer(),
+  SDL_GetRenderDrawColor(GetRenderer(),
                          &previous_color.r,
                          &previous_color.g,
                          &previous_color.b,
                          &previous_color.a);
 
   // Draw the object
-  SDL_SetRenderDrawColor(game_.GetRenderer(), color_.r, color_.g, color_.b, color_.a);
+  SDL_SetRenderDrawColor(GetRenderer(), color_.r, color_.g, color_.b, color_.a);
   SDL_Rect rect = {GetTopLeftX(), GetTopLeftY(), GetWidth(), GetHeight()};
-  SDL_RenderFillRect(game_.GetRenderer(), &rect);
+  SDL_RenderFillRect(GetRenderer(), &rect);
 
   // Restore prior color
-  SDL_SetRenderDrawColor(game_.GetRenderer(), previous_color.r, previous_color.g, previous_color.b, previous_color.a);
+  SDL_SetRenderDrawColor(GetRenderer(), previous_color.r, previous_color.g, previous_color.b, previous_color.a);
 
 }
 

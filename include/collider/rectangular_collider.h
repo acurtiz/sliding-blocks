@@ -1,7 +1,7 @@
-#include "shape/rectangle.h"
-
 #ifndef SLIDINGBLOCKS_INCLUDE_COLLIDER_RECTANGULAR_COLLIDER_H_
 #define SLIDINGBLOCKS_INCLUDE_COLLIDER_RECTANGULAR_COLLIDER_H_
+
+#include "shape/rectangle.h"
 
 namespace sliding_blocks {
 

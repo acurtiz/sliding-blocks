@@ -1,17 +1,17 @@
+#ifndef SLIDINGBLOCKS_INCLUDE_LEVEL_LOADER_JSON_FILE_LOADER_H_
+#define SLIDINGBLOCKS_INCLUDE_LEVEL_LOADER_JSON_FILE_LOADER_H_
+
 #include <string>
 #include <SDL2/SDL.h>
 #include "rapidjson/document.h"
 #include "level_loader.h"
-
-#ifndef SLIDINGBLOCKS_INCLUDE_LEVEL_LOADER_JSON_FILE_LOADER_H_
-#define SLIDINGBLOCKS_INCLUDE_LEVEL_LOADER_JSON_FILE_LOADER_H_
 
 namespace sliding_blocks {
 
 class JsonFileLoader : public LevelLoader {
 
  public:
-  explicit JsonFileLoader(SDL_Renderer *renderer);
+  explicit JsonFileLoader(GameComponent &game_component);
   void Load(const std::string &file_name);
 
  private:
@@ -25,6 +25,7 @@ class JsonFileLoader : public LevelLoader {
   void LoadStartPointsIntoVector(std::vector<StartPoint *> &vector);
   void LoadEndPointsIntoVector(std::vector<EndPoint *> &vector);
   void LoadEnemiesIntoVector(std::vector<Enemy *> &vector);
+  GameComponent &game_component_;
 
 };
 

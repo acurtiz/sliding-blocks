@@ -2,10 +2,6 @@
 
 namespace sliding_blocks {
 
-LevelLoader::LevelLoader(SDL_Renderer *renderer) {
-  renderer_ = renderer;
-}
-
 std::vector<Wall *> LevelLoader::GetWalls() {
   return walls_;
 }
@@ -44,7 +40,7 @@ void LevelLoader::FreeAll() {
 template<typename PointerContainer>
 void LevelLoader::FreePointersInContainer(PointerContainer &pointers) {
 
-  for (auto &pointer : pointers) {
+  for (auto &pointer: pointers) {
     delete pointer;
   }
 

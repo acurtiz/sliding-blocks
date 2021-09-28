@@ -1,14 +1,15 @@
+#ifndef SLIDINGBLOCKS_INCLUDE_BUTTON_RECTANGULAR_BUTTON_H_
+#define SLIDINGBLOCKS_INCLUDE_BUTTON_RECTANGULAR_BUTTON_H_
+
 #include <SDL2/SDL.h>
 #include "text/text.h"
 #include "shape/rectangle.h"
 #include "button/button_event.h"
-
-#ifndef SLIDINGBLOCKS_INCLUDE_BUTTON_RECTANGULAR_BUTTON_H_
-#define SLIDINGBLOCKS_INCLUDE_BUTTON_RECTANGULAR_BUTTON_H_
+#include "game/game_component.h"
 
 namespace sliding_blocks {
 
-class RectangularButton : public Rectangle {
+class RectangularButton : public Rectangle, public GameComponent {
 
  public:
   RectangularButton(int top_left_x,
@@ -16,7 +17,7 @@ class RectangularButton : public Rectangle {
                     int width,
                     int height,
                     Text *label,
-                    SDL_Renderer *renderer);
+                    GameComponent &game_component);
   void SetTopLeftPosition(int top_left_x, int top_left_y) override;
   ButtonEvent HandleEvent(SDL_Event *event);
   void Render();
@@ -25,7 +26,6 @@ class RectangularButton : public Rectangle {
   // We need to set the position during object construction - to avoid calling a virtual member from a constructor,
   // we introduce this redundant non-virtual method
   void SetTopLeftPositionButton(int top_left_x, int top_left_y);
-  SDL_Renderer *renderer_;
   Text *label_;
   const SDL_Color *current_color_;
 

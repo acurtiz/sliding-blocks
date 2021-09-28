@@ -1,14 +1,15 @@
-#include "environment/surface.h"
-
 #ifndef SLIDINGBLOCKS_INCLUDE_ENVIRONMENT_START_POINT_H_
 #define SLIDINGBLOCKS_INCLUDE_ENVIRONMENT_START_POINT_H_
+
+#include "environment/surface.h"
+#include "game/game_component.h"
 
 namespace sliding_blocks {
 
 class StartPoint : public Surface {
 
  public:
-  StartPoint(int id, int top_left_x, int top_left_y, int width, int height, SDL_Renderer *renderer);
+  StartPoint(int id, int top_left_x, int top_left_y, int width, int height, GameComponent &game_component);
   int GetId();
 
  private:

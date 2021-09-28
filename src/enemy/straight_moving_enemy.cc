@@ -10,15 +10,15 @@ StraightMovingEnemy::StraightMovingEnemy(int top_left_x,
                                          double velocity_x,
                                          double velocity_y,
                                          SDL_Color color,
-                                         SDL_Renderer *renderer)
+                                         GameComponent &game_component)
     : Rectangle(top_left_x, top_left_y, width, height),
       RectangularCollider((Rectangle &) *this),
+      GameComponent(game_component),
       position_initial_((Rectangle &) *this),
       pixels_to_move_per_milli_x_initial_(velocity_x),
       pixels_to_move_per_milli_x_current_(velocity_x),
       pixels_to_move_per_milli_y_initial_(velocity_y),
       pixels_to_move_per_milli_y_current_(velocity_y),
-      renderer_(renderer),
       color_(color) {}
 
 void StraightMovingEnemy::Reset() {
@@ -63,15 +63,15 @@ void StraightMovingEnemy::UpdateIfCollision(Wall &other) {
 void StraightMovingEnemy::Render() {
   // Get previous color
   SDL_Color previous_color;
-  SDL_GetRenderDrawColor(renderer_, &previous_color.r, &previous_color.g, &previous_color.b, &previous_color.a);
+  SDL_GetRenderDrawColor(GetRenderer(), &previous_color.r, &previous_color.g, &previous_color.b, &previous_color.a);
 
   // Draw the object
-  SDL_SetRenderDrawColor(renderer_, color_.r, color_.g, color_.b, color_.a);
+  SDL_SetRenderDrawColor(GetRenderer(), color_.r, color_.g, color_.b, color_.a);
   SDL_Rect rect = {GetTopLeftX(), GetTopLeftY(), GetWidth(), GetHeight()};
-  SDL_RenderFillRect(renderer_, &rect);
+  SDL_RenderFillRect(GetRenderer(), &rect);
 
   // Restore prior color
-  SDL_SetRenderDrawColor(renderer_, previous_color.r, previous_color.g, previous_color.b, previous_color.a);
+  SDL_SetRenderDrawColor(GetRenderer(), previous_color.r, previous_color.g, previous_color.b, previous_color.a);
 }
 
 }

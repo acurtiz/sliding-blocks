@@ -2,19 +2,18 @@
 #include <SDL2_ttf/SDL_ttf.h>
 #include <boost/format.hpp>
 #include "game/game.h"
-#include "scene/game_scene.h"
-#include "scene/title_scene.h"
+#include "game/game_component.h"
+#include "game/scene_executor.h"
 
 namespace sliding_blocks {
 
 Game::Game() :
-    scene_current_(nullptr),
-    scene_next_(nullptr),
     screen_width_(500),
     screen_height_(540),
     window_(nullptr),
     renderer_(nullptr),
-    global_quit_(false) {
+    global_quit_(false),
+    game_component_(nullptr) {
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
     throw std::runtime_error(
@@ -49,98 +48,30 @@ Game::Game() :
     );
   }
 
-  LoadScenes();
+  game_component_ = new GameComponent(renderer_, window_, screen_width_, screen_height_);
+  scene_executor_ = new SceneExecutor(*game_component_);
 
 }
 
 Game::~Game() {
 
-  UnloadScenes();
   SDL_DestroyWindow(window_);
   window_ = nullptr;
+
+  SDL_DestroyRenderer(renderer_);
+  renderer_ = nullptr;
+
+  delete game_component_;
+  delete scene_executor_;
+
   SDL_Quit();
-
-}
-
-void Game::SwitchScene(std::type_index scene_type) {
-
-  auto scene_to_switch_to = type_to_scene_map_.find(scene_type);
-  if (scene_to_switch_to == type_to_scene_map_.end()) {
-    throw std::runtime_error("Scene not found\n");
-  }
-
-  scene_next_ = scene_to_switch_to->second;
 
 }
 
 void Game::Run() {
 
-  scene_current_ = type_to_scene_map_[typeid(TitleScene)];
+  scene_executor_->Run();
 
-  SDL_Event event;
-
-  while (!global_quit_) {
-
-    if (scene_next_ != nullptr) {
-      scene_current_ = scene_next_;
-      scene_next_ = nullptr;
-    }
-
-    while (SDL_PollEvent(&event)) {
-
-      if (global_quit_) {
-        return;
-      }
-
-      if (event.type == SDL_QUIT) {
-        global_quit_ = true;
-      }
-
-      scene_current_->RunSingleIterationEventHandler(event);
-    }
-
-    if (global_quit_) {
-      return;
-    }
-
-    scene_current_->RunSingleIterationLoopBody();
-
-    SDL_Delay(15);
-  }
-
-}
-
-void Game::LoadScenes() {
-
-  auto *title_scene = new TitleScene(*this);
-  auto *game_scene = new GameScene(*this);
-  type_to_scene_map_[typeid(TitleScene)] = title_scene;
-  type_to_scene_map_[typeid(GameScene)] = game_scene;
-
-}
-
-void Game::UnloadScenes() {
-
-  for (auto &entry: type_to_scene_map_) {
-    delete entry.second;
-  }
-
-}
-
-void Game::Quit() {
-  global_quit_ = true;
-}
-
-int Game::GetScreenHeight() const {
-  return screen_height_;
-}
-
-int Game::GetScreenWidth() const {
-  return screen_width_;
-}
-
-SDL_Renderer *Game::GetRenderer() const {
-  return renderer_;
 }
 
 }

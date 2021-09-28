@@ -3,17 +3,15 @@
 #include <boost/format.hpp>
 #include "level_loader/json_file_loader.h"
 #include "environment/surface.h"
-#include "environment/wall.h"
-#include "environment/slick_floor.h"
-#include "environment/walkable_floor.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "enemy/straight_moving_enemy.h"
 
 namespace sliding_blocks {
 
-JsonFileLoader::JsonFileLoader(SDL_Renderer *renderer)
-    : LevelLoader(renderer) {}
+JsonFileLoader::JsonFileLoader(GameComponent &game_component)
+    : LevelLoader(),
+      game_component_(game_component) {}
 
 void JsonFileLoader::Load(const std::string &file_name) {
 
@@ -45,7 +43,7 @@ void JsonFileLoader::LoadSurfacesIntoVector(std::vector<SurfaceClass *> &vector,
                                             SDL_Color color,
                                             const std::string &json_field) {
 
-  for (auto &m : document_[json_field.c_str()].GetArray()) {
+  for (auto &m: document_[json_field.c_str()].GetArray()) {
 
     vector.push_back(
         new SurfaceClass(
@@ -54,14 +52,14 @@ void JsonFileLoader::LoadSurfacesIntoVector(std::vector<SurfaceClass *> &vector,
             m.GetObject().FindMember("width")->value.GetInt(),
             m.GetObject().FindMember("height")->value.GetInt(),
             color,
-            renderer_));
+            game_component_));
   }
 
 }
 
 void JsonFileLoader::LoadStartPointsIntoVector(std::vector<StartPoint *> &vector) {
 
-  for (auto &m : document_["start_points"].GetArray()) {
+  for (auto &m: document_["start_points"].GetArray()) {
 
     vector.push_back(
         new StartPoint(
@@ -70,14 +68,14 @@ void JsonFileLoader::LoadStartPointsIntoVector(std::vector<StartPoint *> &vector
             m.GetObject().FindMember("y")->value.GetInt(),
             m.GetObject().FindMember("width")->value.GetInt(),
             m.GetObject().FindMember("height")->value.GetInt(),
-            renderer_));
+            game_component_));
   }
 
 }
 
 void JsonFileLoader::LoadEndPointsIntoVector(std::vector<EndPoint *> &vector) {
 
-  for (auto &m : document_["end_points"].GetArray()) {
+  for (auto &m: document_["end_points"].GetArray()) {
 
     bool has_next_stage = m.GetObject().FindMember("has_next_stage")->value.GetBool();
 
@@ -91,7 +89,7 @@ void JsonFileLoader::LoadEndPointsIntoVector(std::vector<EndPoint *> &vector) {
             m.GetObject().FindMember("height")->value.GetInt(),
             m.GetObject().FindMember("next_stage_file_path")->value.GetString(),
             m.GetObject().FindMember("next_stage_start_point_id")->value.GetInt(),
-            renderer_
+            game_component_
         ) :
         new EndPoint(
             m.GetObject().FindMember("id")->value.GetInt(),
@@ -99,7 +97,7 @@ void JsonFileLoader::LoadEndPointsIntoVector(std::vector<EndPoint *> &vector) {
             m.GetObject().FindMember("y")->value.GetInt(),
             m.GetObject().FindMember("width")->value.GetInt(),
             m.GetObject().FindMember("height")->value.GetInt(),
-            renderer_
+            game_component_
         )
     );
   }
@@ -108,7 +106,7 @@ void JsonFileLoader::LoadEndPointsIntoVector(std::vector<EndPoint *> &vector) {
 
 void JsonFileLoader::LoadEnemiesIntoVector(std::vector<Enemy *> &vector) {
 
-  for (auto &m : document_["enemies"].GetArray()) {
+  for (auto &m: document_["enemies"].GetArray()) {
 
     std::string type = m.GetObject().FindMember("type")->value.GetString();
 
@@ -127,7 +125,7 @@ void JsonFileLoader::LoadEnemiesIntoVector(std::vector<Enemy *> &vector) {
                   (Uint8) m.GetObject().FindMember("color")->value.GetObj().FindMember("b")->value.GetInt(),
                   0xFF
               },
-              renderer_));
+              game_component_));
     } else {
       throw std::runtime_error(boost::str(boost::format("Unrecognized enemy type: %1%\n") % type));
     }

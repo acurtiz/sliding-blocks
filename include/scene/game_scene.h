@@ -18,13 +18,15 @@
 #include "environment/walkable_floor.h"
 #include "environment/wall.h"
 #include "pop_up_menu/death_menu.h"
+#include "game/game_component.h"
+#include "game/scene_executor.h"
 
 namespace sliding_blocks {
 
 class GameScene : public Scene {
 
  public:
-  explicit GameScene(Game &game);
+  explicit GameScene(SceneExecutor &scene_executor, GameComponent &game_component);
   ~GameScene() override;
   void RunSingleIterationEventHandler(SDL_Event &event) override;
   void RunSingleIterationLoopBody() override;

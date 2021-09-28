@@ -9,25 +9,25 @@ Surface::Surface(int top_left_x,
                  int width,
                  int height,
                  SDL_Color color,
-                 SDL_Renderer *renderer)
+                 GameComponent &game_component)
     : Rectangle(top_left_x, top_left_y, width, height),
       RectangularCollider((Rectangle &) *this),
-      renderer_(renderer),
+      GameComponent(game_component),
       color_(color) {}
 
 void Surface::Render() {
 
   // Get previous color
   SDL_Color previous_color;
-  SDL_GetRenderDrawColor(renderer_, &previous_color.r, &previous_color.g, &previous_color.b, &previous_color.a);
+  SDL_GetRenderDrawColor(GetRenderer(), &previous_color.r, &previous_color.g, &previous_color.b, &previous_color.a);
 
   // Draw the object
-  SDL_SetRenderDrawColor(renderer_, color_.r, color_.g, color_.b, color_.a);
+  SDL_SetRenderDrawColor(GetRenderer(), color_.r, color_.g, color_.b, color_.a);
   SDL_Rect rect = {GetTopLeftX(), GetTopLeftY(), GetWidth(), GetHeight()};
-  SDL_RenderFillRect(renderer_, &rect);
+  SDL_RenderFillRect(GetRenderer(), &rect);
 
   // Restore prior color
-  SDL_SetRenderDrawColor(renderer_, previous_color.r, previous_color.g, previous_color.b, previous_color.a);
+  SDL_SetRenderDrawColor(GetRenderer(), previous_color.r, previous_color.g, previous_color.b, previous_color.a);
 
 }
 

@@ -5,6 +5,8 @@
 #include <map>
 #include <SDL2/SDL.h>
 #include "scene/scene.h"
+#include "game/game_component.h"
+#include "game/scene_executor.h"
 
 namespace sliding_blocks {
 
@@ -14,19 +16,10 @@ class Game {
   Game();
   ~Game();
   void Run();
-  void SwitchScene(std::type_index scene_type);
-  void Quit();
-
-  SDL_Renderer *GetRenderer() const;
-  int GetScreenWidth() const;
-  int GetScreenHeight() const;
 
  private:
-  void LoadScenes();
-  void UnloadScenes();
-  std::map<std::type_index, Scene *> type_to_scene_map_;
-  Scene *scene_current_;
-  Scene *scene_next_;
+  GameComponent *game_component_;
+  SceneExecutor *scene_executor_;
   const int screen_width_;
   const int screen_height_;
   SDL_Window *window_;

@@ -1,3 +1,6 @@
+#ifndef SLIDINGBLOCKS_INCLUDE_LEVEL_LOADER_LEVEL_LOADER_H_
+#define SLIDINGBLOCKS_INCLUDE_LEVEL_LOADER_LEVEL_LOADER_H_
+
 #include <vector>
 #include "environment/surface.h"
 #include "environment/start_point.h"
@@ -6,16 +9,13 @@
 #include "environment/walkable_floor.h"
 #include "environment/wall.h"
 #include "enemy/enemy.h"
-
-#ifndef SLIDINGBLOCKS_INCLUDE_LEVEL_LOADER_LEVEL_LOADER_H_
-#define SLIDINGBLOCKS_INCLUDE_LEVEL_LOADER_LEVEL_LOADER_H_
+#include "game/game_component.h"
 
 namespace sliding_blocks {
 
 class LevelLoader {
 
  public:
-  explicit LevelLoader(SDL_Renderer *renderer);
   std::vector<SlickFloor *> GetSlickFloors();
   std::vector<WalkableFloor *> GetWalkableFloors();
   std::vector<Wall *> GetWalls();
@@ -28,7 +28,6 @@ class LevelLoader {
   void FreeAll();
 
  protected:
-  SDL_Renderer *renderer_;
   std::vector<SlickFloor *> slick_floors_;
   std::vector<WalkableFloor *> walkable_floors_;
   std::vector<Wall *> walls_;

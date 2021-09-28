@@ -1,14 +1,15 @@
+#ifndef SLIDINGBLOCKS_INCLUDE_ENEMY_ENEMY_H_
+#define SLIDINGBLOCKS_INCLUDE_ENEMY_ENEMY_H_
+
 #include "shape/rectangle.h"
 #include "environment/surface.h"
 #include "collider/rectangular_collider.h"
 #include "environment/wall.h"
-
-#ifndef SLIDINGBLOCKS_INCLUDE_ENEMY_ENEMY_H_
-#define SLIDINGBLOCKS_INCLUDE_ENEMY_ENEMY_H_
+#include "game/game_component.h"
 
 namespace sliding_blocks {
 
-class Enemy : public virtual Rectangle, public virtual RectangularCollider {
+class Enemy : public virtual Rectangle, public virtual RectangularCollider, public virtual GameComponent {
 
  public:
   virtual ~Enemy() = default;

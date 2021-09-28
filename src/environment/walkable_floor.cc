@@ -8,8 +8,8 @@ WalkableFloor::WalkableFloor(int top_left_x,
                              int width,
                              int height,
                              SDL_Color color,
-                             SDL_Renderer *renderer)
-    : Surface(top_left_x, top_left_y, width, height, color, renderer) {}
+                             GameComponent &game_component)
+    : Surface(top_left_x, top_left_y, width, height, color, game_component) {}
 
 };
 

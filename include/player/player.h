@@ -1,17 +1,18 @@
+#ifndef SLIDINGBLOCKS_INCLUDE_PLAYER_PLAYER_H_
+#define SLIDINGBLOCKS_INCLUDE_PLAYER_PLAYER_H_
+
 #include <SDL2/SDL.h>
 #include "shape/rectangle.h"
 #include "collider/rectangular_collider.h"
 #include "game/living_unit.h"
-
-#ifndef SLIDINGBLOCKS_INCLUDE_PLAYER_PLAYER_H_
-#define SLIDINGBLOCKS_INCLUDE_PLAYER_PLAYER_H_
+#include "game/game_component.h"
 
 namespace sliding_blocks {
 
-class Player : public Rectangle, public RectangularCollider, public LivingUnit {
+class Player : public Rectangle, public RectangularCollider, public LivingUnit, public GameComponent {
 
  public:
-  Player(SDL_Renderer *renderer, int width, int height, int top_left_x, int top_left_y);
+  Player(GameComponent &game_component, int width, int height, int top_left_x, int top_left_y);
   void HandleEvent(SDL_Event &event);
   void MoveCharacterSlide(uint32_t elapsed_millis);
   void MoveCharacterStraight(uint32_t elapsed_millis);
@@ -29,7 +30,6 @@ class Player : public Rectangle, public RectangularCollider, public LivingUnit {
 
   bool ShouldMoveToDestination() const;
 
-  SDL_Renderer *renderer_;
   SDL_Color color_;
 
   double top_left_x_;

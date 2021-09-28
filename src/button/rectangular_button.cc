@@ -7,10 +7,10 @@ RectangularButton::RectangularButton(int top_left_x,
                                      int width,
                                      int height,
                                      Text *label,
-                                     SDL_Renderer *renderer)
+                                     GameComponent &game_component)
     : Rectangle(top_left_x, top_left_y, width, height),
+      GameComponent(game_component),
       label_(label),
-      renderer_(renderer),
       current_color_(&color_default_) {
 
   SetTopLeftPositionButton(top_left_x, top_left_y);
@@ -80,15 +80,15 @@ void RectangularButton::Render() {
 
   // Get previous color
   SDL_Color previous_color;
-  SDL_GetRenderDrawColor(renderer_, &previous_color.r, &previous_color.g, &previous_color.b, &previous_color.a);
+  SDL_GetRenderDrawColor(GetRenderer(), &previous_color.r, &previous_color.g, &previous_color.b, &previous_color.a);
 
   SDL_Rect rect = {GetTopLeftX(), GetTopLeftY(), GetWidth(), GetHeight()};
-  SDL_SetRenderDrawColor(renderer_, current_color_->r, current_color_->g, current_color_->b, current_color_->a);
-  SDL_RenderFillRect(renderer_, &rect);
+  SDL_SetRenderDrawColor(GetRenderer(), current_color_->r, current_color_->g, current_color_->b, current_color_->a);
+  SDL_RenderFillRect(GetRenderer(), &rect);
   label_->Render();
 
   // Restore prior color
-  SDL_SetRenderDrawColor(renderer_, previous_color.r, previous_color.g, previous_color.b, previous_color.a);
+  SDL_SetRenderDrawColor(GetRenderer(), previous_color.r, previous_color.g, previous_color.b, previous_color.a);
 
 }
 

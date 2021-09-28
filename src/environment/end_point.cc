@@ -8,8 +8,8 @@ EndPoint::EndPoint(int id,
                    int top_left_y,
                    int width,
                    int height,
-                   SDL_Renderer *renderer)
-    : Surface(top_left_x, top_left_y, width, height, {0xFF, 0xA5, 0x00, 0xFF}, renderer),
+                   GameComponent &game_component)
+    : Surface(top_left_x, top_left_y, width, height, {0xFF, 0xA5, 0x00, 0xFF}, game_component),
       id_(id),
       has_next_stage_(false),
       next_stage_file_path_(""),
@@ -24,8 +24,8 @@ EndPoint::EndPoint(int id,
                    int height,
                    std::string next_stage_file_path,
                    int next_stage_start_point_id,
-                   SDL_Renderer *renderer)
-    : Surface(top_left_x, top_left_y, width, height, {0xFF, 0xA5, 0x00, 0xFF}, renderer),
+                   GameComponent &game_component)
+    : Surface(top_left_x, top_left_y, width, height, {0xFF, 0xA5, 0x00, 0xFF}, game_component),
       id_(id),
       has_next_stage_(true),
       next_stage_file_path_(next_stage_file_path),

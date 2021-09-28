@@ -4,11 +4,11 @@
 
 namespace sliding_blocks {
 
-Player::Player(SDL_Renderer *renderer, int width, int height, int top_left_x, int top_left_y)
+Player::Player(GameComponent &game_component, int width, int height, int top_left_x, int top_left_y)
     : Rectangle(top_left_x, top_left_y, width, height),
       RectangularCollider((Rectangle &) *this),
       LivingUnit(3),
-      renderer_(renderer),
+      GameComponent(game_component),
       top_left_x_(top_left_x),
       top_left_y_(top_left_y),
       destination_x_(-1),
@@ -139,15 +139,15 @@ void Player::Render() {
 
   // Get previous color
   SDL_Color previous_color;
-  SDL_GetRenderDrawColor(renderer_, &previous_color.r, &previous_color.g, &previous_color.b, &previous_color.a);
+  SDL_GetRenderDrawColor(GetRenderer(), &previous_color.r, &previous_color.g, &previous_color.b, &previous_color.a);
 
   // Draw the object
-  SDL_SetRenderDrawColor(renderer_, color_.r, color_.g, color_.b, color_.a);
+  SDL_SetRenderDrawColor(GetRenderer(), color_.r, color_.g, color_.b, color_.a);
   SDL_Rect rect = {GetTopLeftX(), GetTopLeftY(), GetWidth(), GetHeight()};
-  SDL_RenderFillRect(renderer_, &rect);
+  SDL_RenderFillRect(GetRenderer(), &rect);
 
   // Restore prior color
-  SDL_SetRenderDrawColor(renderer_, previous_color.r, previous_color.g, previous_color.b, previous_color.a);
+  SDL_SetRenderDrawColor(GetRenderer(), previous_color.r, previous_color.g, previous_color.b, previous_color.a);
 }
 
 bool Player::IsSliding() const {

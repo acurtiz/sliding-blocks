@@ -7,18 +7,15 @@
 
 namespace sliding_blocks {
 
-class PopUpMenu : public Rectangle {
+class PopUpMenu : public Rectangle, public GameComponent {
 
  public:
-  PopUpMenu(int top_left_x, int top_left_y, int width, int height, SDL_Color color, Game &game);
+  PopUpMenu(int top_left_x, int top_left_y, int width, int height, SDL_Color color, GameComponent &game_component);
   void Open();
   void Close();
   bool IsOpened() const;
   void RunSingleIterationEventHandler(SDL_Event &event);
   void RunSingleIterationLoopBody();
-
- protected:
-  Game &game_;
 
  private:
   void Render();

@@ -4,13 +4,15 @@
 #include "scene/scene.h"
 #include "text/text.h"
 #include "button/rectangular_button.h"
+#include "game/game_component.h"
+#include "game/scene_executor.h"
 
 namespace sliding_blocks {
 
 class TitleScene : public Scene {
 
  public:
-  explicit TitleScene(Game &game);
+  explicit TitleScene(SceneExecutor &scene_executor, GameComponent &game_component);
   ~TitleScene() override;
   void RunSingleIterationEventHandler(SDL_Event &event) override;
   void RunSingleIterationLoopBody() override;

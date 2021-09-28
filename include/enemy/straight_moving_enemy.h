@@ -1,11 +1,12 @@
+#ifndef SLIDINGBLOCKS_INCLUDE_ENEMY_STRAIGHT_MOVING_ENEMY_H_
+#define SLIDINGBLOCKS_INCLUDE_ENEMY_STRAIGHT_MOVING_ENEMY_H_
+
 #include <SDL2/SDL.h>
 #include "enemy/enemy.h"
 #include "collider/rectangular_collider.h"
 #include "environment/surface.h"
 #include "environment/wall.h"
-
-#ifndef SLIDINGBLOCKS_INCLUDE_ENEMY_STRAIGHT_MOVING_ENEMY_H_
-#define SLIDINGBLOCKS_INCLUDE_ENEMY_STRAIGHT_MOVING_ENEMY_H_
+#include "game/game_component.h"
 
 namespace sliding_blocks {
 
@@ -19,7 +20,7 @@ class StraightMovingEnemy : public Enemy {
                       double velocity_x,
                       double velocity_y,
                       SDL_Color color,
-                      SDL_Renderer *renderer);
+                      GameComponent &game_component);
 
   void Reset() override;
   void UpdateIfCollision(RectangularCollider &other) override;
@@ -33,7 +34,6 @@ class StraightMovingEnemy : public Enemy {
   double pixels_to_move_per_milli_x_current_;
   double pixels_to_move_per_milli_y_current_;
   Rectangle const position_initial_;
-  SDL_Renderer *renderer_;
   SDL_Color color_;
 
 };

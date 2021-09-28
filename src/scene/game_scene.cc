@@ -12,10 +12,10 @@
 
 namespace sliding_blocks {
 
-GameScene::GameScene(Game &game)
-    : Scene(game),
+GameScene::GameScene(SceneExecutor &scene_executor, GameComponent &game_component)
+    : Scene(scene_executor, game_component),
       player_(nullptr),
-      level_loader_(game.GetRenderer()),
+      level_loader_(game_component),
       current_stage_start_point_id_(0),
       font_(nullptr),
       remaining_lives_text_(nullptr),
@@ -35,17 +35,17 @@ GameScene::GameScene(Game &game)
   FreeLevelState();
   LoadAndInitializeLevel(initial_level);
 
-  player_ = new Player(game_.GetRenderer(), 10, 10,
+  player_ = new Player(*this, 10, 10,
                        start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
                        start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
 
   UpdateRemainingLivesText();
   UpdateCurrentStageText(current_level_name_);
 
-  death_menu_ = new DeathMenu(game_,
+  death_menu_ = new DeathMenu(game_component,
                               [this] {
                                 death_menu_->Close();
-                                game_.SwitchScene(typeid(TitleScene));
+                                scene_executor_.SwitchScene(typeid(TitleScene));
                               },
                               [this] {
                                 death_menu_->Close();
@@ -113,25 +113,25 @@ void GameScene::LoadAndInitializeLevel(const std::string &level_file_path) {
                             1,
                             level_loader_.GetLevelHeight(),
                             {0xFF, 0x00, 0x00, 0xFF},
-                            game_.GetRenderer())); // bordering left side
+                            *this)); // bordering left side
   walls_.push_back(new Wall(level_loader_.GetLevelWidth(),
                             0,
                             1,
                             level_loader_.GetLevelHeight(),
                             {0xFF, 0x00, 0x00, 0xFF},
-                            game_.GetRenderer())); // bordering right side
+                            *this)); // bordering right side
   walls_.push_back(new Wall(0,
                             -1,
                             level_loader_.GetLevelWidth(),
                             1,
                             {0xFF, 0x00, 0x00, 0xFF},
-                            game_.GetRenderer())); // bordering top
+                            *this)); // bordering top
   walls_.push_back(new Wall(0,
                             level_loader_.GetLevelHeight(),
                             level_loader_.GetLevelWidth(),
                             1,
                             {0xFF, 0x00, 0x00, 0xFF},
-                            game_.GetRenderer())); // bordering bottom
+                            *this)); // bordering bottom
 
 }
 
@@ -145,7 +145,7 @@ void GameScene::RunSingleIterationEventHandler(SDL_Event &event) {
 void GameScene::UpdateRemainingLivesText() {
 
   delete remaining_lives_text_;
-  remaining_lives_text_ = new Text(game_.GetRenderer(),
+  remaining_lives_text_ = new Text(GetRenderer(),
                                    font_,
                                    {0xFF, 0xFF, 0xFF, 0xFF},
                                    boost::str(boost::format("Lives: %1%") % player_->GetLives()));
@@ -157,11 +157,11 @@ void GameScene::UpdateRemainingLivesText() {
 void GameScene::UpdateCurrentStageText(std::string stage_name) {
 
   delete current_stage_text_;
-  current_stage_text_ = new Text(game_.GetRenderer(),
+  current_stage_text_ = new Text(GetRenderer(),
                                  font_,
                                  {0xFF, 0xFF, 0xFF, 0xFF},
                                  boost::str(boost::format("Current Level: %1%") % current_level_name_));
-  current_stage_text_->SetTopLeftPosition(game_.GetScreenWidth() - current_stage_text_->GetWidth() - 10,
+  current_stage_text_->SetTopLeftPosition(GetScreenWidth() - current_stage_text_->GetWidth() - 10,
                                           remaining_lives_text_->GetTopLeftY());
 
 }
@@ -197,7 +197,7 @@ void GameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_sin
 
     } else {
       printf("Quitting because no next stage\n");
-      game_.SwitchScene(typeid(TitleScene));
+      scene_executor_.SwitchScene(typeid(TitleScene));
     }
 
   } else if (player_->IsCollision(walls_)) {
@@ -265,12 +265,12 @@ void GameScene::RunSingleIterationLoopBody() {
     UpdateEnemyStateAndHandleCollision(elapsed_millis_since_last_frame);
   }
 
-  SDL_SetRenderDrawColor(game_.GetRenderer(),
+  SDL_SetRenderDrawColor(GetRenderer(),
                          background_color_.r,
                          background_color_.g,
                          background_color_.b,
                          background_color_.a);
-  SDL_RenderClear(game_.GetRenderer());
+  SDL_RenderClear(GetRenderer());
 
   for (Surface *walkable_floor: walkable_floors_) walkable_floor->Render();
   for (Surface *slick_floor: slick_floors_) slick_floor->Render();
@@ -285,7 +285,7 @@ void GameScene::RunSingleIterationLoopBody() {
 
   death_menu_->RunSingleIterationLoopBody();
 
-  SDL_RenderPresent(game_.GetRenderer());
+  SDL_RenderPresent(GetRenderer());
 
 }
 
