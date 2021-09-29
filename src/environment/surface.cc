@@ -36,4 +36,8 @@ void Surface::Render() {
 
 }
 
+SDL_Color Surface::GetColor() const {
+  return color_;
+}
+
 }

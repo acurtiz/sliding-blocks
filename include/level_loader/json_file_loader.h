@@ -19,13 +19,13 @@ class JsonFileLoader : public LevelLoader {
 
   template<typename SurfaceClass>
   void LoadSurfacesIntoVector(std::vector<SurfaceClass *> &vector,
-                              SDL_Color color,
                               const std::string &json_field);
 
   void LoadStartPointsIntoVector(std::vector<StartPoint *> &vector);
   void LoadEndPointsIntoVector(std::vector<EndPoint *> &vector);
   void LoadEnemiesIntoVector(std::vector<Enemy *> &vector);
   GameComponent &game_component_;
+  SDL_Color ConvertHexString(std::string str);
 
 };
 

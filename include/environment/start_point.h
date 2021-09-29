@@ -9,7 +9,13 @@ namespace sliding_blocks {
 class StartPoint : public Surface {
 
  public:
-  StartPoint(int id, int top_left_x, int top_left_y, int width, int height, GameComponent &game_component);
+  StartPoint(int id,
+             int top_left_x,
+             int top_left_y,
+             int width,
+             int height,
+             SDL_Color color,
+             GameComponent &game_component);
   int GetId();
 
  private:

@@ -12,6 +12,7 @@ class Surface : public Rectangle, public RectangularCollider, public GameCompone
  public:
   Surface(int top_left_x, int top_left_y, int width, int height, SDL_Color color, GameComponent &game_component);
   void Render();
+  SDL_Color GetColor() const;
 
  private:
   SDL_Color color_;

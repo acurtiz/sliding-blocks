@@ -26,12 +26,9 @@ void JsonFileLoader::Load(const std::string &file_name) {
 
   document_.Parse(level_string.c_str());
 
-  SDL_Color wall_color = {0xFF, 0x00, 0x00, 0xFF};
-  SDL_Color walkable_floor_color = {0xFF, 0xFF, 0xFF, 0xFF};
-
-  LoadSurfacesIntoVector(walls_, wall_color, "walls");
-  LoadSurfacesIntoVector(slick_floors_, {0x00, 0xFF, 0x00, 0xFF}, "slick_floors");
-  LoadSurfacesIntoVector(walkable_floors_, walkable_floor_color, "walkable_floors");
+  LoadSurfacesIntoVector(walls_, "walls");
+  LoadSurfacesIntoVector(slick_floors_, "slick_floors");
+  LoadSurfacesIntoVector(walkable_floors_, "walkable_floors");
   LoadStartPointsIntoVector(start_points_);
   LoadEndPointsIntoVector(end_points_);
   LoadEnemiesIntoVector(enemies_);
@@ -40,27 +37,29 @@ void JsonFileLoader::Load(const std::string &file_name) {
   level_height_ = document_["height"].GetInt();
 
   // Add walls implicitly to surround the level
+  SDL_Color wall_color = ConvertHexString(document_["walls"]["color"].GetString());
   walls_.push_back(new Wall(-1, 0, 1, GetLevelHeight(), wall_color, game_component_));
-  walls_.push_back(
-      new Wall(GetLevelWidth(), 0, 1, GetLevelHeight(), wall_color, game_component_));
+  walls_.push_back(new Wall(GetLevelWidth(), 0, 1, GetLevelHeight(), wall_color, game_component_));
   walls_.push_back(new Wall(0, -1, GetLevelWidth(), 1, wall_color, game_component_));
   walls_.push_back(new Wall(0, GetLevelHeight(), GetLevelWidth(), 1, wall_color, game_component_));
 
   // By default, every part of map is walkable floor
+  SDL_Color walkable_floor_color = ConvertHexString(document_["walkable_floors"]["color"].GetString());
   walkable_floors_.push_back(new WalkableFloor(0,
                                                0,
                                                GetLevelWidth(),
                                                GetLevelHeight(),
                                                walkable_floor_color,
                                                game_component_));
+
 }
 template<typename SurfaceClass>
 void JsonFileLoader::LoadSurfacesIntoVector(std::vector<SurfaceClass *> &vector,
-                                            SDL_Color color,
                                             const std::string &json_field) {
 
-  for (auto &m: document_[json_field.c_str()].GetArray()) {
+  SDL_Color color = ConvertHexString(document_[json_field.c_str()]["color"].GetString());
 
+  for (auto &m: document_[json_field.c_str()].GetObject()["objects"].GetArray()) {
     vector.push_back(
         new SurfaceClass(
             m.GetObject().FindMember("x")->value.GetInt(),
@@ -75,7 +74,9 @@ void JsonFileLoader::LoadSurfacesIntoVector(std::vector<SurfaceClass *> &vector,
 
 void JsonFileLoader::LoadStartPointsIntoVector(std::vector<StartPoint *> &vector) {
 
-  for (auto &m: document_["start_points"].GetArray()) {
+  SDL_Color color = ConvertHexString(document_["start_points"]["color"].GetString());
+
+  for (auto &m: document_["start_points"].GetObject()["objects"].GetArray()) {
 
     vector.push_back(
         new StartPoint(
@@ -84,6 +85,7 @@ void JsonFileLoader::LoadStartPointsIntoVector(std::vector<StartPoint *> &vector
             m.GetObject().FindMember("y")->value.GetInt(),
             m.GetObject().FindMember("width")->value.GetInt(),
             m.GetObject().FindMember("height")->value.GetInt(),
+            color,
             game_component_));
   }
 
@@ -91,7 +93,9 @@ void JsonFileLoader::LoadStartPointsIntoVector(std::vector<StartPoint *> &vector
 
 void JsonFileLoader::LoadEndPointsIntoVector(std::vector<EndPoint *> &vector) {
 
-  for (auto &m: document_["end_points"].GetArray()) {
+  SDL_Color color = ConvertHexString(document_["end_points"]["color"].GetString());
+
+  for (auto &m: document_["end_points"]["objects"].GetArray()) {
 
     bool has_next_stage = m.GetObject().FindMember("has_next_stage")->value.GetBool();
 
@@ -103,6 +107,7 @@ void JsonFileLoader::LoadEndPointsIntoVector(std::vector<EndPoint *> &vector) {
             m.GetObject().FindMember("y")->value.GetInt(),
             m.GetObject().FindMember("width")->value.GetInt(),
             m.GetObject().FindMember("height")->value.GetInt(),
+            color,
             m.GetObject().FindMember("next_stage_file_path")->value.GetString(),
             m.GetObject().FindMember("next_stage_start_point_id")->value.GetInt(),
             game_component_
@@ -113,6 +118,7 @@ void JsonFileLoader::LoadEndPointsIntoVector(std::vector<EndPoint *> &vector) {
             m.GetObject().FindMember("y")->value.GetInt(),
             m.GetObject().FindMember("width")->value.GetInt(),
             m.GetObject().FindMember("height")->value.GetInt(),
+            color,
             game_component_
         )
     );
@@ -122,7 +128,9 @@ void JsonFileLoader::LoadEndPointsIntoVector(std::vector<EndPoint *> &vector) {
 
 void JsonFileLoader::LoadEnemiesIntoVector(std::vector<Enemy *> &vector) {
 
-  for (auto &m: document_["enemies"].GetArray()) {
+  SDL_Color color = ConvertHexString(document_["enemies"]["color"].GetString());
+
+  for (auto &m: document_["enemies"]["objects"].GetArray()) {
 
     std::string type = m.GetObject().FindMember("type")->value.GetString();
 
@@ -135,18 +143,43 @@ void JsonFileLoader::LoadEnemiesIntoVector(std::vector<Enemy *> &vector) {
               m.GetObject().FindMember("height")->value.GetInt(),
               m.GetObject().FindMember("velocity_x")->value.GetDouble(),
               m.GetObject().FindMember("velocity_y")->value.GetDouble(),
-              {
-                  (Uint8) m.GetObject().FindMember("color")->value.GetObj().FindMember("r")->value.GetInt(),
-                  (Uint8) m.GetObject().FindMember("color")->value.GetObj().FindMember("g")->value.GetInt(),
-                  (Uint8) m.GetObject().FindMember("color")->value.GetObj().FindMember("b")->value.GetInt(),
-                  0xFF
-              },
+              color,
               game_component_));
     } else {
       throw std::runtime_error(boost::str(boost::format("Unrecognized enemy type: %1%\n") % type));
     }
 
   }
+}
+
+SDL_Color JsonFileLoader::ConvertHexString(std::string str) {
+
+  if (str.substr(0, 2) != "0x") {
+    throw std::runtime_error("Color must start with '0x'\n");
+  }
+
+  int r, g, b;
+  std::stringstream stream;
+
+  stream << std::hex << str.substr(2, 2);
+  stream >> r;
+  stream.clear();
+
+  stream << std::hex << str.substr(4, 2);
+  stream >> g;
+  stream.clear();
+
+  stream << std::hex << str.substr(6, 2);
+  stream >> b;
+  stream.clear();
+
+  return {
+      (Uint8) r,
+      (Uint8) g,
+      (Uint8) b,
+      0xFF
+  };
+
 }
 
 }

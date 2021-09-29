@@ -167,7 +167,7 @@ void GameScene::LoadAndInitializeLevelEnvironment(const std::string &level_file_
   delete current_stage_text_;
   current_stage_text_ = new Text(GetRenderer(),
                                  font_,
-                                 {0x00, 0x00, 0x00, 0x00},
+                                 {0xFF, 0xFF, 0xFF, 0x00},
                                  boost::str(boost::format("Current Level: %1%") % current_level_name_));
   current_stage_text_->SetTopLeftPosition(GetScreenWidth() - current_stage_text_->GetWidth() - 10,
                                           GetScreenHeight() - current_stage_text_->GetHeight() - 10);
@@ -184,7 +184,7 @@ void GameScene::SetPlayerLives(int lives_remaining) {
   delete remaining_lives_text_;
   remaining_lives_text_ = new Text(GetRenderer(),
                                    font_,
-                                   {0x00, 0x00, 0x00, 0x00},
+                                   {0xFF, 0xFF, 0xFF, 0x00},
                                    boost::str(boost::format("Lives: %1%") % player_->GetLives()));
   remaining_lives_text_->SetTopLeftPosition(10, GetScreenHeight() - remaining_lives_text_->GetHeight() - 10);
 
@@ -219,7 +219,7 @@ void GameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_sin
 
     if (player_->HasRemainingLives()) {
 
-      player_->SetLives(player_->GetLives() - 1);
+      SetPlayerLives(player_->GetLives() - 1);
 
       // TODO: for now, the only way to reset enemies is to reload the entire level. We can optimize this later
       LoadAndInitializeLevelEnvironment(current_level_file_path_, current_level_start_point_id_);
@@ -243,6 +243,8 @@ void GameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_sin
     }
 
   }
+
+  printf("Player [%d, %d]\n", player_->GetTopLeftX(), player_->GetTopLeftY());
 
 }
 

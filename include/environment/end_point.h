@@ -15,6 +15,7 @@ class EndPoint : public Surface {
            int top_left_y,
            int width,
            int height,
+           SDL_Color color,
            GameComponent &game_component);
 
   EndPoint(int id,
@@ -22,6 +23,7 @@ class EndPoint : public Surface {
            int top_left_y,
            int width,
            int height,
+           SDL_Color color,
            std::string next_stage_file_path,
            int next_stage_start_point_id,
            GameComponent &game_component);

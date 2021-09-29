@@ -20,7 +20,7 @@ Player::Player(GameComponent &game_component, int width, int height, int top_lef
       player_angle_(0),
       target_angle_(0),
       is_sliding_(false),
-      color_({0x00, 0x00, 0x00, 0xFF}) {
+      color_({0xFF, 0xFF, 0xFF, 0xFF}) {
 }
 
 void Player::SetTopLeftPosition(double x, double y) {
