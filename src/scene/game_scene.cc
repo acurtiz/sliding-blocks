@@ -202,7 +202,7 @@ void GameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_sin
       scene_executor_.SwitchScene(typeid(TitleScene));
     }
 
-  } else if (player_->IsCollision(walls_)) {
+  } else if (player_->IsCollision(walls_) || player_->IsCollision(enemies_)) {
 
     if (player_->HasRemainingLives()) {
       player_->DecrementLives();
