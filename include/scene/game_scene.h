@@ -35,12 +35,12 @@ class GameScene : public Scene {
 
  private:
   void FreeLevelState();
-  void ResetPlayerState();
-
-  void LoadAndInitializeLevel(const std::string &level_file_path, int start_point_id);
-  void UpdateRemainingLivesText();
+  void ResetPlayerLivesAndPosition();
+  void ResetPlayerPosition();
+  void LoadAndInitializeLevelEnvironment(const std::string &level_file_path, int start_point_id);
   void UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_since_last_frame);
   void UpdateEnemyStateAndHandleCollision(uint32_t elapsed_millis_since_last_frame);
+  void SetPlayerLives(int lives_remaining);
 
   SDL_Color background_color_ = {0x00, 0x00, 0x00, 0xFF}; // black
   Player *player_;
@@ -53,11 +53,12 @@ class GameScene : public Scene {
 
   std::map<int, StartPoint *> start_point_id_to_obj_;
   std::map<int, EndPoint *> end_point_id_to_obj_;
+  std::string current_level_file_path_;
   std::string current_level_name_;
   int current_level_width_;
   int current_level_height_;
 
-  int current_stage_start_point_id_;
+  int current_level_start_point_id_;
 
   JsonFileLoader level_loader_;
 

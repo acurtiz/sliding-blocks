@@ -26,9 +26,12 @@ void JsonFileLoader::Load(const std::string &file_name) {
 
   document_.Parse(level_string.c_str());
 
-  LoadSurfacesIntoVector(walls_, {0xFF, 0x00, 0x00, 0xFF}, "walls");
+  SDL_Color wall_color = {0xFF, 0x00, 0x00, 0xFF};
+  SDL_Color walkable_floor_color = {0xFF, 0xFF, 0xFF, 0xFF};
+
+  LoadSurfacesIntoVector(walls_, wall_color, "walls");
   LoadSurfacesIntoVector(slick_floors_, {0x00, 0xFF, 0x00, 0xFF}, "slick_floors");
-  LoadSurfacesIntoVector(walkable_floors_, {0xFF, 0xFF, 0xFF, 0xFF}, "walkable_floors");
+  LoadSurfacesIntoVector(walkable_floors_, walkable_floor_color, "walkable_floors");
   LoadStartPointsIntoVector(start_points_);
   LoadEndPointsIntoVector(end_points_);
   LoadEnemiesIntoVector(enemies_);
@@ -36,8 +39,21 @@ void JsonFileLoader::Load(const std::string &file_name) {
   level_width_ = document_["width"].GetInt();
   level_height_ = document_["height"].GetInt();
 
-}
+  // Add walls implicitly to surround the level
+  walls_.push_back(new Wall(-1, 0, 1, GetLevelHeight(), wall_color, game_component_));
+  walls_.push_back(
+      new Wall(GetLevelWidth(), 0, 1, GetLevelHeight(), wall_color, game_component_));
+  walls_.push_back(new Wall(0, -1, GetLevelWidth(), 1, wall_color, game_component_));
+  walls_.push_back(new Wall(0, GetLevelHeight(), GetLevelWidth(), 1, wall_color, game_component_));
 
+  // By default, every part of map is walkable floor
+  walkable_floors_.push_back(new WalkableFloor(0,
+                                               0,
+                                               GetLevelWidth(),
+                                               GetLevelHeight(),
+                                               walkable_floor_color,
+                                               game_component_));
+}
 template<typename SurfaceClass>
 void JsonFileLoader::LoadSurfacesIntoVector(std::vector<SurfaceClass *> &vector,
                                             SDL_Color color,

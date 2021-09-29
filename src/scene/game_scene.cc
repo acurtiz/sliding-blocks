@@ -16,7 +16,8 @@ GameScene::GameScene(SceneExecutor &scene_executor, GameComponent &game_componen
     : Scene(scene_executor, game_component),
       player_(nullptr),
       level_loader_(game_component),
-      current_stage_start_point_id_(0),
+      current_level_file_path_("multi_stage_level/1.json"),
+      current_level_start_point_id_(0),
       font_(nullptr),
       remaining_lives_text_(nullptr),
       current_stage_text_(nullptr),
@@ -30,8 +31,8 @@ GameScene::GameScene(SceneExecutor &scene_executor, GameComponent &game_componen
     throw std::runtime_error(boost::str(boost::format("Failed to load font, error: %1%\n") % TTF_GetError()));
   }
 
-  LoadAndInitializeLevel("multi_stage_level/1.json", current_stage_start_point_id_);
-  ResetPlayerState();
+  LoadAndInitializeLevelEnvironment(current_level_file_path_, current_level_start_point_id_);
+  ResetPlayerLivesAndPosition();
 
   death_menu_ = new DeathMenu(game_component,
                               [this] {
@@ -40,7 +41,9 @@ GameScene::GameScene(SceneExecutor &scene_executor, GameComponent &game_componen
                               },
                               [this] {
                                 death_menu_->Close();
-                                ResetPlayerState();
+                                LoadAndInitializeLevelEnvironment(current_level_file_path_,
+                                                                  current_level_start_point_id_);
+                                ResetPlayerLivesAndPosition();
                               }
   );
 
@@ -102,22 +105,29 @@ void GameScene::RunSingleIterationLoopBody() {
 }
 
 void GameScene::PreSwitchHook() {
-  LoadAndInitializeLevel("multi_stage_level/1.json", 0);
-  ResetPlayerState();
-  death_menu_->Close();
+  current_level_file_path_ = "multi_stage_level/1.json";
+  current_level_start_point_id_ = 0;
+  LoadAndInitializeLevelEnvironment(current_level_file_path_, current_level_start_point_id_);
+  ResetPlayerLivesAndPosition();
 }
 
 void GameScene::PostSwitchHook() {
-
+  death_menu_->Close();
 }
 
-void GameScene::ResetPlayerState() {
+void GameScene::ResetPlayerPosition() {
+  player_->SetTopLeftPosition(start_point_id_to_obj_[current_level_start_point_id_]->GetTopLeftX(),
+                              start_point_id_to_obj_[current_level_start_point_id_]->GetTopLeftY());
+  player_->ResetMovement();
+}
+
+void GameScene::ResetPlayerLivesAndPosition() {
 
   delete player_;
   player_ = new Player(*this, 10, 10,
-                       start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
-                       start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
-  UpdateRemainingLivesText();
+                       start_point_id_to_obj_[current_level_start_point_id_]->GetTopLeftX(),
+                       start_point_id_to_obj_[current_level_start_point_id_]->GetTopLeftY());
+  SetPlayerLives(player_->GetLives());
 
 }
 
@@ -129,7 +139,7 @@ void GameScene::FreeLevelState() {
 
 }
 
-void GameScene::LoadAndInitializeLevel(const std::string &level_file_path, int start_point_id) {
+void GameScene::LoadAndInitializeLevelEnvironment(const std::string &level_file_path, int start_point_id) {
 
   FreeLevelState();
 
@@ -164,51 +174,18 @@ void GameScene::LoadAndInitializeLevel(const std::string &level_file_path, int s
 
   GetCamera()->SetBoundaries(0, current_level_width_, current_level_height_, 0);
 
-  // Walls implicitly surround every level
-  walls_.push_back(new Wall(-1,
-                            0,
-                            1,
-                            level_loader_.GetLevelHeight(),
-                            {0xFF, 0x00, 0x00, 0xFF},
-                            *this)); // bordering left side
-  walls_.push_back(new Wall(level_loader_.GetLevelWidth(),
-                            0,
-                            1,
-                            level_loader_.GetLevelHeight(),
-                            {0xFF, 0x00, 0x00, 0xFF},
-                            *this)); // bordering right side
-  walls_.push_back(new Wall(0,
-                            -1,
-                            level_loader_.GetLevelWidth(),
-                            1,
-                            {0xFF, 0x00, 0x00, 0xFF},
-                            *this)); // bordering top
-  walls_.push_back(new Wall(0,
-                            level_loader_.GetLevelHeight(),
-                            level_loader_.GetLevelWidth(),
-                            1,
-                            {0xFF, 0x00, 0x00, 0xFF},
-                            *this)); // bordering bottom
-
-  current_stage_start_point_id_ = start_point_id;
-  if (player_ == nullptr) {
-    ResetPlayerState();
-  } else {
-    player_->ResetMovement();
-  }
-  player_->SetTopLeftPosition(start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
-                              start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
+  current_level_start_point_id_ = start_point_id;
 
 }
 
-void GameScene::UpdateRemainingLivesText() {
+void GameScene::SetPlayerLives(int lives_remaining) {
 
+  player_->SetLives(lives_remaining);
   delete remaining_lives_text_;
   remaining_lives_text_ = new Text(GetRenderer(),
                                    font_,
                                    {0x00, 0x00, 0x00, 0x00},
                                    boost::str(boost::format("Lives: %1%") % player_->GetLives()));
-
   remaining_lives_text_->SetTopLeftPosition(10, GetScreenHeight() - remaining_lives_text_->GetHeight() - 10);
 
 }
@@ -230,7 +207,9 @@ void GameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_sin
     auto endpoint = player_->GetCollidingObject<EndPoint *>(end_points_);
 
     if (endpoint->HasNextStage()) {
-      LoadAndInitializeLevel(endpoint->GetNextStageFilePath(), endpoint->GetNextStageStartPointId());
+      current_level_file_path_ = endpoint->GetNextStageFilePath();
+      LoadAndInitializeLevelEnvironment(endpoint->GetNextStageFilePath(), endpoint->GetNextStageStartPointId());
+      ResetPlayerPosition();
     } else {
       printf("Quitting because no next stage\n");
       scene_executor_.SwitchScene(typeid(TitleScene));
@@ -239,13 +218,13 @@ void GameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_sin
   } else if (player_->IsCollision(walls_) || player_->IsCollision(enemies_)) {
 
     if (player_->HasRemainingLives()) {
-      player_->DecrementLives();
-      player_->ResetMovement();
-      UpdateRemainingLivesText();
-      player_->SetTopLeftPosition(start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
-                                  start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
 
-      printf("Player hit wall thus lost a life! Remaining lives: %d\n", player_->GetLives());
+      player_->SetLives(player_->GetLives() - 1);
+
+      // TODO: for now, the only way to reset enemies is to reload the entire level. We can optimize this later
+      LoadAndInitializeLevelEnvironment(current_level_file_path_, current_level_start_point_id_);
+      ResetPlayerPosition();
+
     } else {
       death_menu_->Open();
       printf("Player died but no remaining lives; exiting!\n");
