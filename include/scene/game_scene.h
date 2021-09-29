@@ -18,6 +18,7 @@
 #include "environment/walkable_floor.h"
 #include "environment/wall.h"
 #include "pop_up_menu/death_menu.h"
+#include "pop_up_menu/win_menu.h"
 #include "game/game_component.h"
 #include "game/scene_executor.h"
 
@@ -69,6 +70,7 @@ class GameScene : public Scene {
   Text *current_stage_text_;
 
   DeathMenu *death_menu_;
+  WinMenu *win_menu_;
 
 };
 

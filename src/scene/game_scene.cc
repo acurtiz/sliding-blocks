@@ -47,6 +47,12 @@ GameScene::GameScene(SceneExecutor &scene_executor, GameComponent &game_componen
                               }
   );
 
+  win_menu_ = new WinMenu(game_component,
+                          [this] {
+                            win_menu_->Close();
+                            scene_executor_.SwitchScene(typeid(TitleScene));
+                          });
+
 }
 
 GameScene::~GameScene() {
@@ -55,6 +61,7 @@ GameScene::~GameScene() {
   delete current_stage_text_;
   delete player_;
   delete death_menu_;
+  delete win_menu_;
 
   FreeLevelState();
 
@@ -66,7 +73,7 @@ void GameScene::RunSingleIterationEventHandler(SDL_Event &event) {
 
   player_->HandleEvent(event);
   death_menu_->RunSingleIterationEventHandler(event);
-
+  win_menu_->RunSingleIterationEventHandler(event);
 }
 
 void GameScene::RunSingleIterationLoopBody() {
@@ -74,7 +81,7 @@ void GameScene::RunSingleIterationLoopBody() {
   uint32_t elapsed_millis_since_last_frame = timer_.GetElapsedMilliseconds();
   timer_.StartTimer();
 
-  if (!death_menu_->IsOpened()) {
+  if (!death_menu_->IsOpened() && !win_menu_->IsOpened()) {
     GetCamera()->CenterOnObject(*player_);
     UpdatePlayerStateAndHandleCollisions(elapsed_millis_since_last_frame);
     UpdateEnemyStateAndHandleCollision(elapsed_millis_since_last_frame);
@@ -99,6 +106,7 @@ void GameScene::RunSingleIterationLoopBody() {
   current_stage_text_->Render();
 
   death_menu_->RunSingleIterationLoopBody();
+  win_menu_->RunSingleIterationLoopBody();
 
   SDL_RenderPresent(GetRenderer());
 
@@ -113,6 +121,7 @@ void GameScene::PreSwitchHook() {
 
 void GameScene::PostSwitchHook() {
   death_menu_->Close();
+  win_menu_->Close();
 }
 
 void GameScene::ResetPlayerPosition() {
@@ -211,8 +220,7 @@ void GameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_sin
       LoadAndInitializeLevelEnvironment(endpoint->GetNextStageFilePath(), endpoint->GetNextStageStartPointId());
       ResetPlayerPosition();
     } else {
-      printf("Quitting because no next stage\n");
-      scene_executor_.SwitchScene(typeid(TitleScene));
+      win_menu_->Open();
     }
 
   } else if (player_->IsCollision(walls_) || player_->IsCollision(enemies_)) {
@@ -243,8 +251,6 @@ void GameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_sin
     }
 
   }
-
-  printf("Player [%d, %d]\n", player_->GetTopLeftX(), player_->GetTopLeftY());
 
 }
 
