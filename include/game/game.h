@@ -7,6 +7,7 @@
 #include "scene/scene.h"
 #include "game/game_component.h"
 #include "game/scene_executor.h"
+#include "game/camera.h"
 
 namespace sliding_blocks {
 
@@ -20,6 +21,7 @@ class Game {
  private:
   GameComponent *game_component_;
   SceneExecutor *scene_executor_;
+  Camera *camera_;
   const int screen_width_;
   const int screen_height_;
   SDL_Window *window_;

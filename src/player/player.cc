@@ -45,6 +45,10 @@ void Player::HandleEvent(SDL_Event &event) {
 
   SDL_GetMouseState(&destination_x_, &destination_y_);
 
+  // World coordinates (actual destination) == screen coordinates (i.e. mouse state) + camera offset
+  destination_x_ = destination_x_ + GetCamera()->GetTopLeftX();
+  destination_y_ = destination_y_ + GetCamera()->GetTopLeftY();
+
   // We get the unit vector from player to destination, and combine that with the speed to get the velocity vector
   // (in pixels per millisecond); then we calculate the time it will take to reach the destination. The per-frame loop
   // thus has everything required to control changing position for non-slick straight line movement
@@ -143,7 +147,12 @@ void Player::Render() {
 
   // Draw the object
   SDL_SetRenderDrawColor(GetRenderer(), color_.r, color_.g, color_.b, color_.a);
-  SDL_Rect rect = {GetTopLeftX(), GetTopLeftY(), GetWidth(), GetHeight()};
+  SDL_Rect rect = {
+      GetTopLeftX() - GetCamera()->GetTopLeftX(),
+      GetTopLeftY() - GetCamera()->GetTopLeftY(),
+      GetWidth(),
+      GetHeight()
+  };
   SDL_RenderFillRect(GetRenderer(), &rect);
 
   // Restore prior color

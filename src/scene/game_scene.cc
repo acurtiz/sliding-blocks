@@ -107,6 +107,8 @@ void GameScene::LoadAndInitializeLevel(const std::string &level_file_path) {
   current_level_width_ = level_loader_.GetLevelWidth();
   current_level_name_ = level_loader_.GetLevelName();
 
+  GetCamera()->SetBoundaries(0, current_level_width_, current_level_height_, 0);
+
   // Walls implicitly surround every level
   walls_.push_back(new Wall(-1,
                             0,
@@ -147,10 +149,10 @@ void GameScene::UpdateRemainingLivesText() {
   delete remaining_lives_text_;
   remaining_lives_text_ = new Text(GetRenderer(),
                                    font_,
-                                   {0xFF, 0xFF, 0xFF, 0xFF},
+                                   {0x00, 0x00, 0x00, 0x00},
                                    boost::str(boost::format("Lives: %1%") % player_->GetLives()));
 
-  remaining_lives_text_->SetTopLeftPosition(10, 505);
+  remaining_lives_text_->SetTopLeftPosition(10, GetScreenHeight() - remaining_lives_text_->GetHeight() - 10);
 
 }
 
@@ -159,7 +161,7 @@ void GameScene::UpdateCurrentStageText(std::string stage_name) {
   delete current_stage_text_;
   current_stage_text_ = new Text(GetRenderer(),
                                  font_,
-                                 {0xFF, 0xFF, 0xFF, 0xFF},
+                                 {0x00, 0x00, 0x00, 0x00},
                                  boost::str(boost::format("Current Level: %1%") % current_level_name_));
   current_stage_text_->SetTopLeftPosition(GetScreenWidth() - current_stage_text_->GetWidth() - 10,
                                           remaining_lives_text_->GetTopLeftY());
@@ -261,6 +263,7 @@ void GameScene::RunSingleIterationLoopBody() {
   timer_.StartTimer();
 
   if (!IsGamePaused()) {
+    GetCamera()->CenterOnObject(*player_);
     UpdatePlayerStateAndHandleCollisions(elapsed_millis_since_last_frame);
     UpdateEnemyStateAndHandleCollision(elapsed_millis_since_last_frame);
   }

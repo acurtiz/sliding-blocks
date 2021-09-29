@@ -1,23 +1,35 @@
 {
   "name": "Stage 2...",
-  "width": 500,
-  "height": 500,
+  "width": 2000,
+  "height": 1000,
   "enemies": [
   ],
   "slick_floors": [
     {
       "x": 0,
-      "y": 250,
-      "width": 500,
-      "height": 250
+      "y": 500,
+      "width": 1000,
+      "height": 500
+    },
+    {
+      "x": 1000,
+      "y": 0,
+      "width": 1000,
+      "height": 500
     }
   ],
   "walkable_floors": [
     {
       "x": 0,
       "y": 0,
-      "width": 500,
-      "height": 250
+      "width": 1000,
+      "height": 500
+    },
+    {
+      "x": 1000,
+      "y": 500,
+      "width": 1000,
+      "height": 500
     }
   ],
   "walls": [

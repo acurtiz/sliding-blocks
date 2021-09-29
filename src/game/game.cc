@@ -4,12 +4,13 @@
 #include "game/game.h"
 #include "game/game_component.h"
 #include "game/scene_executor.h"
+#include "game/camera.h"
 
 namespace sliding_blocks {
 
 Game::Game() :
     screen_width_(500),
-    screen_height_(540),
+    screen_height_(500),
     window_(nullptr),
     renderer_(nullptr),
     global_quit_(false),
@@ -48,7 +49,8 @@ Game::Game() :
     );
   }
 
-  game_component_ = new GameComponent(renderer_, window_, screen_width_, screen_height_);
+  camera_ = new Camera(screen_width_, screen_height_, 0, 0);
+  game_component_ = new GameComponent(renderer_, window_, screen_width_, screen_height_, camera_);
   scene_executor_ = new SceneExecutor(*game_component_);
 
 }

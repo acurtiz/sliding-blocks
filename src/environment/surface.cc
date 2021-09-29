@@ -23,7 +23,12 @@ void Surface::Render() {
 
   // Draw the object
   SDL_SetRenderDrawColor(GetRenderer(), color_.r, color_.g, color_.b, color_.a);
-  SDL_Rect rect = {GetTopLeftX(), GetTopLeftY(), GetWidth(), GetHeight()};
+  SDL_Rect rect = {
+      GetTopLeftX() - GetCamera()->GetTopLeftX(),
+      GetTopLeftY() - GetCamera()->GetTopLeftY(),
+      GetWidth(),
+      GetHeight()
+  };
   SDL_RenderFillRect(GetRenderer(), &rect);
 
   // Restore prior color
