@@ -84,5 +84,9 @@ void TitleScene::RunSingleIterationLoopBody() {
 
 }
 
+void TitleScene::PreSwitchHook() {}
+
+void TitleScene::PostSwitchHook() {}
+
 }
 

@@ -16,6 +16,8 @@ class TitleScene : public Scene {
   ~TitleScene() override;
   void RunSingleIterationEventHandler(SDL_Event &event) override;
   void RunSingleIterationLoopBody() override;
+  void PreSwitchHook() override;
+  void PostSwitchHook() override;
 
  private:
   Text *title_;

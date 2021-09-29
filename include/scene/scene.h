@@ -15,6 +15,8 @@ class Scene : public GameComponent {
   virtual ~Scene();
   virtual void RunSingleIterationEventHandler(SDL_Event &event) = 0;
   virtual void RunSingleIterationLoopBody() = 0;
+  virtual void PreSwitchHook() = 0;
+  virtual void PostSwitchHook() = 0;
 
  protected:
   SceneExecutor &scene_executor_;

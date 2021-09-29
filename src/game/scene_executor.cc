@@ -24,15 +24,19 @@ SceneExecutor::~SceneExecutor() {
 
 void SceneExecutor::Run() {
 
-  scene_current_ = type_to_scene_map_[typeid(TitleScene)];
+  scene_next_ = type_to_scene_map_[typeid(TitleScene)];
 
   SDL_Event event;
 
   while (!should_quit_) {
 
     if (scene_next_ != nullptr) {
+      if (scene_current_ != nullptr) {
+        scene_current_->PostSwitchHook();
+      }
       scene_current_ = scene_next_;
       scene_next_ = nullptr;
+      scene_current_->PreSwitchHook();
     }
 
     while (SDL_PollEvent(&event)) {

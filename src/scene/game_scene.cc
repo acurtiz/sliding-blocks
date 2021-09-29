@@ -30,17 +30,8 @@ GameScene::GameScene(SceneExecutor &scene_executor, GameComponent &game_componen
     throw std::runtime_error(boost::str(boost::format("Failed to load font, error: %1%\n") % TTF_GetError()));
   }
 
-  std::string initial_level = "multi_stage_level/1.json";
-
-  FreeLevelState();
-  LoadAndInitializeLevel(initial_level);
-
-  player_ = new Player(*this, 10, 10,
-                       start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
-                       start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
-
-  UpdateRemainingLivesText();
-  UpdateCurrentStageText(current_level_name_);
+  LoadAndInitializeLevel("multi_stage_level/1.json", current_stage_start_point_id_);
+  ResetPlayerState();
 
   death_menu_ = new DeathMenu(game_component,
                               [this] {
@@ -49,10 +40,7 @@ GameScene::GameScene(SceneExecutor &scene_executor, GameComponent &game_componen
                               },
                               [this] {
                                 death_menu_->Close();
-                                player_->SetTopLeftPosition(start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
-                                                            start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
-                                player_->ResetLives();
-                                UpdateRemainingLivesText();
+                                ResetPlayerState();
                               }
   );
 
@@ -63,14 +51,73 @@ GameScene::~GameScene() {
   delete remaining_lives_text_;
   delete current_stage_text_;
   delete player_;
-  player_ = nullptr;
+  delete death_menu_;
 
   FreeLevelState();
 
-  delete death_menu_;
-  death_menu_ = nullptr;
-
   TTF_CloseFont(font_);
+
+}
+
+void GameScene::RunSingleIterationEventHandler(SDL_Event &event) {
+
+  player_->HandleEvent(event);
+  death_menu_->RunSingleIterationEventHandler(event);
+
+}
+
+void GameScene::RunSingleIterationLoopBody() {
+
+  uint32_t elapsed_millis_since_last_frame = timer_.GetElapsedMilliseconds();
+  timer_.StartTimer();
+
+  if (!death_menu_->IsOpened()) {
+    GetCamera()->CenterOnObject(*player_);
+    UpdatePlayerStateAndHandleCollisions(elapsed_millis_since_last_frame);
+    UpdateEnemyStateAndHandleCollision(elapsed_millis_since_last_frame);
+  }
+
+  SDL_SetRenderDrawColor(GetRenderer(),
+                         background_color_.r,
+                         background_color_.g,
+                         background_color_.b,
+                         background_color_.a);
+  SDL_RenderClear(GetRenderer());
+
+  for (Surface *walkable_floor: walkable_floors_) walkable_floor->Render();
+  for (Surface *slick_floor: slick_floors_) slick_floor->Render();
+  for (Surface *wall: walls_) wall->Render();
+  for (StartPoint *start_point: start_points_) start_point->Render();
+  for (EndPoint *end_point: end_points_) end_point->Render();
+  for (Enemy *enemy: enemies_) enemy->Render();
+  player_->Render();
+
+  remaining_lives_text_->Render();
+  current_stage_text_->Render();
+
+  death_menu_->RunSingleIterationLoopBody();
+
+  SDL_RenderPresent(GetRenderer());
+
+}
+
+void GameScene::PreSwitchHook() {
+  LoadAndInitializeLevel("multi_stage_level/1.json", 0);
+  ResetPlayerState();
+  death_menu_->Close();
+}
+
+void GameScene::PostSwitchHook() {
+
+}
+
+void GameScene::ResetPlayerState() {
+
+  delete player_;
+  player_ = new Player(*this, 10, 10,
+                       start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
+                       start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
+  UpdateRemainingLivesText();
 
 }
 
@@ -82,7 +129,7 @@ void GameScene::FreeLevelState() {
 
 }
 
-void GameScene::LoadAndInitializeLevel(const std::string &level_file_path) {
+void GameScene::LoadAndInitializeLevel(const std::string &level_file_path, int start_point_id) {
 
   FreeLevelState();
 
@@ -106,6 +153,14 @@ void GameScene::LoadAndInitializeLevel(const std::string &level_file_path) {
   current_level_height_ = level_loader_.GetLevelHeight();
   current_level_width_ = level_loader_.GetLevelWidth();
   current_level_name_ = level_loader_.GetLevelName();
+
+  delete current_stage_text_;
+  current_stage_text_ = new Text(GetRenderer(),
+                                 font_,
+                                 {0x00, 0x00, 0x00, 0x00},
+                                 boost::str(boost::format("Current Level: %1%") % current_level_name_));
+  current_stage_text_->SetTopLeftPosition(GetScreenWidth() - current_stage_text_->GetWidth() - 10,
+                                          GetScreenHeight() - current_stage_text_->GetHeight() - 10);
 
   GetCamera()->SetBoundaries(0, current_level_width_, current_level_height_, 0);
 
@@ -135,12 +190,14 @@ void GameScene::LoadAndInitializeLevel(const std::string &level_file_path) {
                             {0xFF, 0x00, 0x00, 0xFF},
                             *this)); // bordering bottom
 
-}
-
-void GameScene::RunSingleIterationEventHandler(SDL_Event &event) {
-
-  player_->HandleEvent(event);
-  death_menu_->RunSingleIterationEventHandler(event);
+  current_stage_start_point_id_ = start_point_id;
+  if (player_ == nullptr) {
+    ResetPlayerState();
+  } else {
+    player_->ResetMovement();
+  }
+  player_->SetTopLeftPosition(start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
+                              start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
 
 }
 
@@ -153,18 +210,6 @@ void GameScene::UpdateRemainingLivesText() {
                                    boost::str(boost::format("Lives: %1%") % player_->GetLives()));
 
   remaining_lives_text_->SetTopLeftPosition(10, GetScreenHeight() - remaining_lives_text_->GetHeight() - 10);
-
-}
-
-void GameScene::UpdateCurrentStageText(std::string stage_name) {
-
-  delete current_stage_text_;
-  current_stage_text_ = new Text(GetRenderer(),
-                                 font_,
-                                 {0x00, 0x00, 0x00, 0x00},
-                                 boost::str(boost::format("Current Level: %1%") % current_level_name_));
-  current_stage_text_->SetTopLeftPosition(GetScreenWidth() - current_stage_text_->GetWidth() - 10,
-                                          remaining_lives_text_->GetTopLeftY());
 
 }
 
@@ -185,18 +230,7 @@ void GameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_sin
     auto endpoint = player_->GetCollidingObject<EndPoint *>(end_points_);
 
     if (endpoint->HasNextStage()) {
-
-      std::string next_stage_file_path = endpoint->GetNextStageFilePath();
-      int next_stage_start_point_id = endpoint->GetNextStageStartPointId();
-
-      printf("Loading next stage: %s\n", next_stage_file_path.c_str());
-      LoadAndInitializeLevel(next_stage_file_path);
-      UpdateCurrentStageText(next_stage_file_path);
-      player_->ResetMovement();
-      current_stage_start_point_id_ = next_stage_start_point_id;
-      player_->SetTopLeftPosition(start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftX(),
-                                  start_point_id_to_obj_[current_stage_start_point_id_]->GetTopLeftY());
-
+      LoadAndInitializeLevel(endpoint->GetNextStageFilePath(), endpoint->GetNextStageStartPointId());
     } else {
       printf("Quitting because no next stage\n");
       scene_executor_.SwitchScene(typeid(TitleScene));
@@ -244,51 +278,6 @@ void GameScene::UpdateEnemyStateAndHandleCollision(uint32_t elapsed_millis_since
     }
 
   }
-
-}
-
-bool GameScene::IsGamePaused() {
-
-  if (death_menu_->IsOpened()) {
-    return true;
-  }
-
-  return false;
-
-}
-
-void GameScene::RunSingleIterationLoopBody() {
-
-  uint32_t elapsed_millis_since_last_frame = timer_.GetElapsedMilliseconds();
-  timer_.StartTimer();
-
-  if (!IsGamePaused()) {
-    GetCamera()->CenterOnObject(*player_);
-    UpdatePlayerStateAndHandleCollisions(elapsed_millis_since_last_frame);
-    UpdateEnemyStateAndHandleCollision(elapsed_millis_since_last_frame);
-  }
-
-  SDL_SetRenderDrawColor(GetRenderer(),
-                         background_color_.r,
-                         background_color_.g,
-                         background_color_.b,
-                         background_color_.a);
-  SDL_RenderClear(GetRenderer());
-
-  for (Surface *walkable_floor: walkable_floors_) walkable_floor->Render();
-  for (Surface *slick_floor: slick_floors_) slick_floor->Render();
-  for (Surface *wall: walls_) wall->Render();
-  for (StartPoint *start_point: start_points_) start_point->Render();
-  for (EndPoint *end_point: end_points_) end_point->Render();
-  for (Enemy *enemy: enemies_) enemy->Render();
-  player_->Render();
-
-  remaining_lives_text_->Render();
-  current_stage_text_->Render();
-
-  death_menu_->RunSingleIterationLoopBody();
-
-  SDL_RenderPresent(GetRenderer());
 
 }
 

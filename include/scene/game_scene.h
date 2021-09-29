@@ -30,16 +30,17 @@ class GameScene : public Scene {
   ~GameScene() override;
   void RunSingleIterationEventHandler(SDL_Event &event) override;
   void RunSingleIterationLoopBody() override;
+  void PreSwitchHook() override;
+  void PostSwitchHook() override;
 
  private:
   void FreeLevelState();
-  void LoadAndInitializeLevel(const std::string &level_file_path);
+  void ResetPlayerState();
+
+  void LoadAndInitializeLevel(const std::string &level_file_path, int start_point_id);
   void UpdateRemainingLivesText();
-  void UpdateCurrentStageText(std::string stage_name);
   void UpdatePlayerStateAndHandleCollisions(uint32_t elapsed_millis_since_last_frame);
   void UpdateEnemyStateAndHandleCollision(uint32_t elapsed_millis_since_last_frame);
-
-  bool IsGamePaused();
 
   SDL_Color background_color_ = {0x00, 0x00, 0x00, 0xFF}; // black
   Player *player_;
