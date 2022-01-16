@@ -28,20 +28,12 @@ void Camera::CenterOnObject(Rectangle &obj) {
   int top = center_y - GetHeight() / 2;
   int bottom = center_y + GetHeight() / 2;
 
-  // If any edge exceeds boundary, update it
+  // If any edge exceeds boundary, correct it
   left = boundary_left_x_ != -1 && boundary_left_x_ > left ? boundary_left_x_ : left;
   top = boundary_top_y_ != -1 && boundary_top_y_ > top ? boundary_top_y_ : top;
+  left = boundary_right_x_ != -1 && boundary_right_x_ < right ? boundary_right_x_ - GetWidth() : left;
+  top = boundary_bottom_y_ != -1 && boundary_bottom_y_ < bottom ? boundary_bottom_y_ - GetHeight() : top;
 
-  if (boundary_right_x_ != -1 && boundary_right_x_ < right) {
-    left = boundary_right_x_ - GetWidth();
-  }
-
-  if (boundary_bottom_y_ != -1 && boundary_bottom_y_ < bottom) {
-    // Shift up
-    top = boundary_bottom_y_ - GetHeight();
-  }
-
-  // Set the position
   SetTopLeftPosition(left, top);
 
 }

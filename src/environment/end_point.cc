@@ -15,7 +15,7 @@ EndPoint::EndPoint(int id,
       has_next_stage_(false),
       next_stage_file_path_(""),
       next_stage_start_point_id_(-1) {
-  printf("Constructing endpoint without next stage\n");
+
 }
 
 EndPoint::EndPoint(int id,
@@ -32,7 +32,7 @@ EndPoint::EndPoint(int id,
       has_next_stage_(true),
       next_stage_file_path_(next_stage_file_path),
       next_stage_start_point_id_(next_stage_start_point_id) {
-  printf("Constructing endpoint with next stage\n");
+
 }
 
 int EndPoint::GetId() const {
