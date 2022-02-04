@@ -26,6 +26,9 @@ class TitleScene : public Scene {
   Text *start_button_label_;
   RectangularButton *start_button_;
 
+  Text *multiplayer_start_button_label_;
+  RectangularButton *multiplayer_start_button_;
+
   Text *quit_button_label_;
   RectangularButton *quit_button_;
 

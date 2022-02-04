@@ -1,6 +1,5 @@
 #include <SDL2/SDL.h>
 #include <SDL2_ttf/SDL_ttf.h>
-#include <SDL2_net/SDL_net.h>
 #include <boost/format.hpp>
 #include "game/game.h"
 #include "game/game_component.h"
@@ -20,12 +19,6 @@ Game::Game() :
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
     throw std::runtime_error(
         boost::str(boost::format("SDL could not initialize, error: %1%\n") % SDL_GetError())
-    );
-  }
-
-  if (SDLNet_Init() != 0) {
-    throw std::runtime_error(
-        boost::str(boost::format("SDLNet could not initialize, error: %1%\n") % SDLNet_GetError())
     );
   }
 
@@ -73,7 +66,6 @@ Game::~Game() {
   delete game_component_;
   delete scene_executor_;
 
-  SDLNet_Quit();
   SDL_Quit();
 
 }
