@@ -10,9 +10,10 @@ class NetworkClient {
  public:
   NetworkClient();
   ~NetworkClient();
+  void CheckHostService();
   bool Connect(std::string hostname, int port);
   void Disconnect();
-  void SendData();
+  void SendData(std::string data);
 
  private:
   ENetHost *client_;
