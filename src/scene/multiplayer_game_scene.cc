@@ -9,10 +9,13 @@
 #include "environment/surface.h"
 #include "level_loader/json_file_loader.h"
 #include "enemy/straight_moving_enemy.h"
+#include "network/client.h"
 
 namespace sliding_blocks {
 
-MultiplayerGameScene::MultiplayerGameScene(SceneExecutor &scene_executor, GameComponent &game_component)
+MultiplayerGameScene::MultiplayerGameScene(SceneExecutor &scene_executor,
+                                           GameComponent &game_component,
+                                           NetworkClient &network_client)
     : Scene(scene_executor, game_component),
       player_(nullptr),
       level_loader_(game_component),
@@ -24,7 +27,8 @@ MultiplayerGameScene::MultiplayerGameScene(SceneExecutor &scene_executor, GameCo
       current_level_width_(-1),
       current_level_height_(-1),
       current_level_name_(),
-      death_menu_(nullptr) {
+      death_menu_(nullptr),
+      network_client_(network_client) {
 
   font_ = TTF_OpenFont("assets/font/OpenSans-Regular.ttf", 18);
   if (font_ == nullptr) {
@@ -78,6 +82,8 @@ void MultiplayerGameScene::RunSingleIterationEventHandler(SDL_Event &event) {
 
 void MultiplayerGameScene::RunSingleIterationLoopBody() {
 
+  network_client_.CheckHostService();
+
   uint32_t elapsed_millis_since_last_frame = timer_.GetElapsedMilliseconds();
   timer_.StartTimer();
 
@@ -112,16 +118,28 @@ void MultiplayerGameScene::RunSingleIterationLoopBody() {
 
 }
 
+void MultiplayerGameScene::HandleReceivedData(const std::string &data) {
+
+  printf("MPGame: Received data [%s]\n", data.c_str());
+
+}
+
 void MultiplayerGameScene::PreSwitchHook() {
   current_level_file_path_ = "multi_stage_level/1.json";
   current_level_start_point_id_ = 0;
   LoadAndInitializeLevelEnvironment(current_level_file_path_, current_level_start_point_id_);
   ResetPlayerLivesAndPosition();
+
+  network_client_.RegisterHandler(*this);
+
 }
 
 void MultiplayerGameScene::PostSwitchHook() {
+
   death_menu_->Close();
   win_menu_->Close();
+
+  network_client_.DeregisterHandler();
 }
 
 void MultiplayerGameScene::ResetPlayerPosition() {

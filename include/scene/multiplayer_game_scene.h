@@ -21,18 +21,23 @@
 #include "pop_up_menu/win_menu.h"
 #include "game/game_component.h"
 #include "game/scene_executor.h"
+#include "network/client.h"
+#include "network/handler.h"
 
 namespace sliding_blocks {
 
-class MultiplayerGameScene : public Scene {
+class MultiplayerGameScene : public Scene, public Handler {
 
  public:
-  explicit MultiplayerGameScene(SceneExecutor &scene_executor, GameComponent &game_component);
+  explicit MultiplayerGameScene(SceneExecutor &scene_executor,
+                                GameComponent &game_component,
+                                NetworkClient &network_client);
   ~MultiplayerGameScene() override;
   void RunSingleIterationEventHandler(SDL_Event &event) override;
   void RunSingleIterationLoopBody() override;
   void PreSwitchHook() override;
   void PostSwitchHook() override;
+  void HandleReceivedData(const std::string &data) override;
 
  private:
   void FreeLevelState();
@@ -71,6 +76,8 @@ class MultiplayerGameScene : public Scene {
 
   DeathMenu *death_menu_;
   WinMenu *win_menu_;
+
+  NetworkClient &network_client_;
 
 };
 

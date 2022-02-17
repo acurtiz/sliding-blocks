@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 #include "scene/scene.h"
 #include "game/game_component.h"
+#include "network/client.h"
 
 namespace sliding_blocks {
 
@@ -25,6 +26,8 @@ class SceneExecutor : public GameComponent {
   Scene *scene_current_;
   Scene *scene_next_;
   bool should_quit_;
+  NetworkClient network_client_;
+
 };
 
 }

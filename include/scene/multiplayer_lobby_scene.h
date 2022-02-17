@@ -7,20 +7,22 @@
 #include "game/game_component.h"
 #include "game/scene_executor.h"
 #include "network/client.h"
+#include "network/handler.h"
 
 namespace sliding_blocks {
 
-class MultiplayerLobbyScene : public Scene {
+class MultiplayerLobbyScene : public Scene, public Handler {
 
  public:
-  explicit MultiplayerLobbyScene(SceneExecutor
-                                 &scene_executor,
-                                 GameComponent &game_component);
+  explicit MultiplayerLobbyScene(SceneExecutor &scene_executor,
+                                 GameComponent &game_component,
+                                 NetworkClient &network_client);
   ~MultiplayerLobbyScene() override;
   void RunSingleIterationEventHandler(SDL_Event &event) override;
   void RunSingleIterationLoopBody() override;
   void PreSwitchHook() override;
   void PostSwitchHook() override;
+  void HandleReceivedData(const std::string &data) override;
 
  private:
 
@@ -36,7 +38,7 @@ class MultiplayerLobbyScene : public Scene {
   Text *quit_button_label_;
   RectangularButton *quit_button_;
 
-  NetworkClient *network_client_;
+  NetworkClient &network_client_;
 
 };
 

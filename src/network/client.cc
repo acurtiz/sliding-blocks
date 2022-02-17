@@ -1,10 +1,14 @@
 #include <enet/enet.h>
 #include <boost/format.hpp>
 #include "network/client.h"
+#include "network/handler.h"
 
 namespace sliding_blocks {
 
-NetworkClient::NetworkClient() {
+NetworkClient::NetworkClient()
+    : client_(nullptr),
+      connected_peer_(nullptr),
+      handler_(nullptr) {
 
   if (enet_initialize() != 0) {
     throw std::runtime_error(
@@ -26,6 +30,16 @@ NetworkClient::~NetworkClient() {
   Disconnect();
   enet_host_destroy(client_);
 
+}
+
+void NetworkClient::RegisterHandler(Handler &handler) {
+  printf("Registering handler.\n");
+  handler_ = &handler;
+}
+
+void NetworkClient::DeregisterHandler() {
+  printf("De-registering handler.\n");
+  handler_ = nullptr;
 }
 
 void NetworkClient::CheckHostService() {
@@ -50,6 +64,9 @@ void NetworkClient::CheckHostService() {
                event.packet->data,
                event.peer->data,
                event.channelID);
+        if (handler_ != nullptr) {
+          handler_->HandleReceivedData((char *) event.packet->data);
+        }
         enet_packet_destroy(event.packet);
         break;
 
@@ -102,6 +119,7 @@ void NetworkClient::Disconnect() {
 
 void NetworkClient::SendData(std::string data) {
 
+  // TODO: Add function to send data unreliably
   ENetPacket *packet = enet_packet_create(data.c_str(), data.length() + 1, ENET_PACKET_FLAG_RELIABLE);
   enet_peer_send(connected_peer_, 0, packet);
   enet_host_flush(client_);

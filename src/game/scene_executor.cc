@@ -5,6 +5,7 @@
 #include "scene/title_scene.h"
 #include "scene/multiplayer_lobby_scene.h"
 #include "scene/multiplayer_game_scene.h"
+#include "network/client.h"
 
 namespace sliding_blocks {
 
@@ -12,7 +13,8 @@ SceneExecutor::SceneExecutor(GameComponent &game_object)
     : GameComponent(game_object),
       scene_current_(nullptr),
       scene_next_(nullptr),
-      should_quit_(false) {
+      should_quit_(false),
+      network_client_(NetworkClient()) {
 
   LoadScenes();
 
@@ -80,8 +82,8 @@ void SceneExecutor::LoadScenes() {
 
   auto *title_scene = new TitleScene(*this, *this);
   auto *game_scene = new GameScene(*this, *this);
-  auto *multiplayer_lobby_scene = new MultiplayerLobbyScene(*this, *this);
-  auto *multiplayer_game_scene = new MultiplayerGameScene(*this, *this);
+  auto *multiplayer_lobby_scene = new MultiplayerLobbyScene(*this, *this, network_client_);
+  auto *multiplayer_game_scene = new MultiplayerGameScene(*this, *this, network_client_);
   type_to_scene_map_[typeid(TitleScene)] = title_scene;
   type_to_scene_map_[typeid(GameScene)] = game_scene;
   type_to_scene_map_[typeid(MultiplayerLobbyScene)] = multiplayer_lobby_scene;

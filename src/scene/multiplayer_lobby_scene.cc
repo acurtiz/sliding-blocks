@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <SDL2_ttf/SDL_ttf.h>
 #include <boost/format.hpp>
 #include "scene/multiplayer_lobby_scene.h"
@@ -7,7 +8,9 @@
 
 namespace sliding_blocks {
 
-MultiplayerLobbyScene::MultiplayerLobbyScene(SceneExecutor &scene_executor, GameComponent &game_component)
+MultiplayerLobbyScene::MultiplayerLobbyScene(SceneExecutor &scene_executor,
+                                             GameComponent &game_component,
+                                             NetworkClient &network_client)
     : Scene(scene_executor, game_component),
       title_(nullptr),
       connect_button_label_(nullptr),
@@ -16,7 +19,7 @@ MultiplayerLobbyScene::MultiplayerLobbyScene(SceneExecutor &scene_executor, Game
       start_button_(nullptr),
       quit_button_label_(nullptr),
       quit_button_(nullptr),
-      network_client_(new NetworkClient()) {
+      network_client_(network_client) {
 
   title_font_ = TTF_OpenFont("assets/font/OpenSans-Regular.ttf", 28);
   if (title_font_ == nullptr) {
@@ -79,8 +82,8 @@ MultiplayerLobbyScene::~MultiplayerLobbyScene() {
 void MultiplayerLobbyScene::RunSingleIterationEventHandler(SDL_Event &event) {
 
   if (connect_button_->HandleEvent(&event) == PRESSED) {
-    network_client_->Connect("localhost", 1337);
-    //network_client_->SendData("join");
+    network_client_.Connect("localhost", 1337);
+    network_client_.SendData("join");
   }
 
   if (start_button_->HandleEvent(&event) == PRESSED) {
@@ -93,12 +96,23 @@ void MultiplayerLobbyScene::RunSingleIterationEventHandler(SDL_Event &event) {
 
 }
 
+void MultiplayerLobbyScene::HandleReceivedData(const std::string &data) {
+
+  printf("MPLobby: Received data [%s]\n", data.c_str());
+
+  if (data == "READY") {
+    printf("Received ready signal. Switching to game.");
+    scene_executor_.SwitchScene(typeid(MultiplayerGameScene));
+  }
+
+}
+
 void MultiplayerLobbyScene::RunSingleIterationLoopBody() {
 
   SDL_SetRenderDrawColor(GetRenderer(), 0x00, 0x00, 0x00, 0xFF);
   SDL_RenderClear(GetRenderer());
 
-  network_client_->CheckHostService();
+  network_client_.CheckHostService();
 
   title_->Render();
   connect_button_->Render();
@@ -108,9 +122,13 @@ void MultiplayerLobbyScene::RunSingleIterationLoopBody() {
 
 }
 
-void MultiplayerLobbyScene::PreSwitchHook() {}
+void MultiplayerLobbyScene::PreSwitchHook() {
+  network_client_.RegisterHandler(*this);
+}
 
-void MultiplayerLobbyScene::PostSwitchHook() {}
+void MultiplayerLobbyScene::PostSwitchHook() {
+  network_client_.DeregisterHandler();
+}
 
 }
 
