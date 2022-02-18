@@ -78,6 +78,7 @@ class MultiplayerGameScene : public Scene, public Handler {
   WinMenu *win_menu_;
 
   NetworkClient &network_client_;
+  bool run_game_;
 
 };
 

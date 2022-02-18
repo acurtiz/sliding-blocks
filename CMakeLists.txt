@@ -17,6 +17,17 @@ add_custom_target(copy_assets
         )
 add_dependencies(SlidingBlocks copy_assets)
 
+# Link to SlidingBlocksNetworking library
+find_path(SLIDING_BLOCKS_NETWORKING_INCLUDE_DIR
+        NAMES "message/network_message.h"
+        HINTS "/Users/alex/CLionProjects/SlidingBlocksNetworking/include"
+        REQUIRED)
+include_directories(${SLIDING_BLOCKS_NETWORKING_INCLUDE_DIR})
+find_library(SLIDING_BLOCKS_NETWORKING_LIBRARY
+        NAMES SlidingBlocksNetworking
+        HINTS /Users/alex/CLionProjects/SlidingBlocksNetworking/build)
+target_link_libraries(SlidingBlocks LINK_PUBLIC ${SLIDING_BLOCKS_NETWORKING_LIBRARY})
+
 # Link to SDL2 library
 find_library(SDL2_LIBRARY
         NAMES SDL2

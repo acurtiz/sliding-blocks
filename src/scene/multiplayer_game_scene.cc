@@ -10,6 +10,7 @@
 #include "level_loader/json_file_loader.h"
 #include "enemy/straight_moving_enemy.h"
 #include "network/client.h"
+#include "message/player_position_message.h"
 
 namespace sliding_blocks {
 
@@ -28,7 +29,8 @@ MultiplayerGameScene::MultiplayerGameScene(SceneExecutor &scene_executor,
       current_level_height_(-1),
       current_level_name_(),
       death_menu_(nullptr),
-      network_client_(network_client) {
+      network_client_(network_client),
+      run_game_(false) {
 
   font_ = TTF_OpenFont("assets/font/OpenSans-Regular.ttf", 18);
   if (font_ == nullptr) {
@@ -84,6 +86,14 @@ void MultiplayerGameScene::RunSingleIterationLoopBody() {
 
   network_client_.CheckHostService();
 
+  network_client_.SendData(sliding_blocks_networking::PlayerPositionMessage(player_->GetTopLeftX(),
+                                                                            player_->GetTopLeftY()).Serialize());
+
+  if (!run_game_) {
+    network_client_.SendData("GAME_LOADED");
+    return;
+  }
+
   uint32_t elapsed_millis_since_last_frame = timer_.GetElapsedMilliseconds();
   timer_.StartTimer();
 
@@ -120,7 +130,13 @@ void MultiplayerGameScene::RunSingleIterationLoopBody() {
 
 void MultiplayerGameScene::HandleReceivedData(const std::string &data) {
 
-  printf("MPGame: Received data [%s]\n", data.c_str());
+  printf("HandleReceivedData [%s]\n", data.c_str());
+  if (!run_game_ && data == "START_COUNTDOWN") {
+    run_game_ = true;
+    return;
+  }
+
+  auto *message = sliding_blocks_networking::NetworkMessage::DeserializeAny(data);
 
 }
 
