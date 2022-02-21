@@ -30,7 +30,8 @@ MultiplayerGameScene::MultiplayerGameScene(SceneExecutor &scene_executor,
       current_level_name_(),
       death_menu_(nullptr),
       network_client_(network_client),
-      run_game_(false) {
+      run_game_(false),
+      non_controlled_players_() {
 
   font_ = TTF_OpenFont("assets/font/OpenSans-Regular.ttf", 18);
   if (font_ == nullptr) {
@@ -58,7 +59,6 @@ MultiplayerGameScene::MultiplayerGameScene(SceneExecutor &scene_executor,
                             win_menu_->Close();
                             scene_executor_.SwitchScene(typeid(TitleScene));
                           });
-
 }
 
 MultiplayerGameScene::~MultiplayerGameScene() {
@@ -116,6 +116,7 @@ void MultiplayerGameScene::RunSingleIterationLoopBody() {
   for (StartPoint *start_point: start_points_) start_point->Render();
   for (EndPoint *end_point: end_points_) end_point->Render();
   for (Enemy *enemy: enemies_) enemy->Render();
+  for (NonControlledPlayer *non_controlled_player: non_controlled_players_) non_controlled_player->Render();
   player_->Render();
 
   remaining_lives_text_->Render();
@@ -137,6 +138,12 @@ void MultiplayerGameScene::HandleReceivedData(const std::string &data) {
   }
 
   auto *message = sliding_blocks_networking::NetworkMessage::DeserializeAny(data);
+
+  auto *tmp = dynamic_cast<const sliding_blocks_networking::PlayerPositionMessage *>(message);
+  if (tmp != nullptr) {
+    printf("Casted!\n");
+    non_controlled_players_[0]->SetTopLeftPosition(tmp->GetX(), tmp->GetY());
+  }
 
 }
 
@@ -172,6 +179,9 @@ void MultiplayerGameScene::ResetPlayerLivesAndPosition() {
                        start_point_id_to_obj_[current_level_start_point_id_]->GetTopLeftY());
   SetPlayerLives(player_->GetLives());
 
+  non_controlled_players_.clear();
+  non_controlled_players_.push_back(new NonControlledPlayer(*this, 10, 10, -1, -1));
+
 }
 
 void MultiplayerGameScene::FreeLevelState() {
@@ -179,6 +189,7 @@ void MultiplayerGameScene::FreeLevelState() {
   level_loader_.FreeAll();
   start_point_id_to_obj_.clear();
   end_point_id_to_obj_.clear();
+  non_controlled_players_.clear();
 
 }
 
