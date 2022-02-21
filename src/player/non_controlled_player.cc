@@ -12,7 +12,7 @@ NonControlledPlayer::NonControlledPlayer(GameComponent &game_component,
       GameComponent(game_component),
       top_left_x_(top_left_x),
       top_left_y_(top_left_y),
-      color_({0xFF, 0xFF, 0xFF, 0xFF}) {
+      color_({0xAA, 0xAA, 0xAA, 0xAA}) {
 }
 
 void NonControlledPlayer::SetTopLeftPosition(double x, double y) {
