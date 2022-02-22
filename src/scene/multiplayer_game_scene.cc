@@ -3,6 +3,12 @@
 #include <boost/format.hpp>
 #include <fstream>
 #include <sstream>
+
+#include <message/player_position_message.h>
+#include <message/initialize_player_message.h>
+#include <message/initialization_end_message.h>
+#include <message/start_message.h>
+
 #include "scene/multiplayer_game_scene.h"
 #include "scene/title_scene.h"
 #include "player/player.h"
@@ -10,8 +16,6 @@
 #include "level_loader/json_file_loader.h"
 #include "enemy/straight_moving_enemy.h"
 #include "network/client.h"
-#include "message/player_position_message.h"
-#include "message/initialize_player_message.h"
 
 namespace sliding_blocks {
 
@@ -87,13 +91,14 @@ void MultiplayerGameScene::RunSingleIterationLoopBody() {
 
   network_client_.CheckHostService();
 
-  network_client_.SendData(sliding_blocks_networking::PlayerPositionMessage(player_->GetTopLeftX(),
-                                                                            player_->GetTopLeftY()).Serialize());
-
   if (!run_game_) {
-    network_client_.SendData("GAME_LOADED");
     return;
   }
+
+  network_client_.SendData(sliding_blocks_networking::PlayerPositionMessage(player_->GetTopLeftX(),
+                                                                            player_->GetTopLeftY(),
+                                                                            network_client_.GetClientId())
+                               .Serialize());
 
   uint32_t elapsed_millis_since_last_frame = timer_.GetElapsedMilliseconds();
   timer_.StartTimer();
@@ -132,29 +137,40 @@ void MultiplayerGameScene::RunSingleIterationLoopBody() {
 
 void MultiplayerGameScene::HandleReceivedData(const std::string &data) {
 
-  printf("HandleReceivedData [%s]\n", data.c_str());
+  printf("MultiplayerGameScene data received: [%s]\n", data.c_str());
 
   auto *message = sliding_blocks_networking::NetworkMessage::DeserializeAny(data);
 
   auto *initialize_player_message = dynamic_cast<const sliding_blocks_networking::InitializePlayerMessage *>(message);
   if (initialize_player_message != nullptr) {
+
+    if (initialize_player_message->GetClientId() == network_client_.GetClientId()) {
+      printf("Skipping InitializePlayerMessage because it's for our own client [%d]\n", network_client_.GetClientId());
+      return;
+    }
+
+    printf("Instantiating non-player character (client %d)\n", initialize_player_message->GetClientId());
     non_controlled_players_.erase(initialize_player_message->GetClientId());
     non_controlled_players_[initialize_player_message->GetClientId()] =
         new NonControlledPlayer(*this, 10, 10, initialize_player_message->GetX(), initialize_player_message->GetY());
+
+    // We consider initialization complete as soon as a single non controlled player is instantiated; tell the server
+    network_client_.SendData(sliding_blocks_networking::InitializationEndMessage().Serialize());
+
   }
 
-  if (non_controlled_players_.empty()) {
-    printf("Waiting on player initialization message\n");
-    return;
-  }
-
-  if (!run_game_ && data == "START_COUNTDOWN") {
+  auto *start_message = dynamic_cast<const sliding_blocks_networking::StartMessage *>(message);
+  if (start_message != nullptr) {
+    printf("Starting the game\n");
     run_game_ = true;
-    return;
   }
 
   auto *player_position_message = dynamic_cast<const sliding_blocks_networking::PlayerPositionMessage *>(message);
   if (player_position_message != nullptr) {
+    if (player_position_message->GetClientId() == network_client_.GetClientId()) {
+      printf("ERROR: received player position message for self\n");
+      return;
+    }
     non_controlled_players_[player_position_message->GetClientId()]->SetTopLeftPosition(player_position_message->GetX(),
                                                                                         player_position_message->GetY());
   }
@@ -168,6 +184,13 @@ void MultiplayerGameScene::PreSwitchHook() {
   ResetPlayerLivesAndPosition();
 
   network_client_.RegisterHandler(*this);
+
+  // Tell the server that we're loaded; tell it our position and color (it will need to share these with other clients!)
+  network_client_.SendData(sliding_blocks_networking::InitializePlayerMessage(player_->GetTopLeftX(),
+                                                                              player_->GetTopLeftY(),
+                                                                              network_client_.GetClientId(),
+                                                                              sliding_blocks_networking::Color::RED)
+                               .Serialize());
 
 }
 

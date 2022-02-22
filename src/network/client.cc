@@ -8,7 +8,8 @@ namespace sliding_blocks {
 NetworkClient::NetworkClient()
     : client_(nullptr),
       connected_peer_(nullptr),
-      handler_(nullptr) {
+      handler_(nullptr),
+      client_id_(-1) {
 
   if (enet_initialize() != 0) {
     throw std::runtime_error(
@@ -124,6 +125,18 @@ void NetworkClient::SendData(std::string data) {
   enet_peer_send(connected_peer_, 0, packet);
   enet_host_flush(client_);
 
+}
+
+void NetworkClient::SetClientId(int client_id) {
+  client_id_ = client_id;
+}
+
+int NetworkClient::GetClientId() const {
+  return client_id_;
+}
+
+void NetworkClient::ResetClientId() {
+  client_id_ = -1; // indicates not set
 }
 
 }
