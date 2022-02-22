@@ -57,7 +57,7 @@ class MultiplayerGameScene : public Scene, public Handler {
   std::vector<StartPoint *> start_points_;
   std::vector<EndPoint *> end_points_;
   std::vector<Enemy *> enemies_;
-  std::map<int, NonControlledPlayer *> non_controlled_players_;
+  std::map<int, NonControlledPlayer> non_controlled_players_;
 
   std::map<int, StartPoint *> start_point_id_to_obj_;
   std::map<int, EndPoint *> end_point_id_to_obj_;
