@@ -8,9 +8,6 @@
 #include <message/initialize_player_message.h>
 #include <message/initialization_end_message.h>
 #include <message/start_message.h>
-#include <message/player_died_message.h>
-#include <message/player_reached_goal_message.h>
-#include <message/game_over_message.h>
 
 #include "scene/multiplayer_game_scene.h"
 #include "scene/title_scene.h"
@@ -182,22 +179,6 @@ void MultiplayerGameScene::HandleReceivedData(const std::string &data) {
                                                                                           player_position_message->GetY());
   }
 
-  auto *game_over_message = dynamic_cast<const sliding_blocks_networking::GameOverMessage *>(message);
-  if (game_over_message != nullptr) {
-
-    printf("Game over! Player [%d] has won!\n", game_over_message->GetWinnerClientId());
-
-    int winning_client_id = game_over_message->GetWinnerClientId();
-
-    if (winning_client_id == network_client_.GetClientId()) {
-      win_menu_->Open();
-    } else {
-      // TODO: replace with lose menu
-      death_menu_->Open();
-    }
-
-  }
-
 }
 
 void MultiplayerGameScene::PreSwitchHook() {
@@ -314,8 +295,15 @@ void MultiplayerGameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed
 
   } else if (player_->IsCollision(end_points_)) {
 
-    network_client_.SendData(sliding_blocks_networking::PlayerReachedGoalMessage(network_client_.GetClientId())
-                                 .Serialize());
+    auto endpoint = player_->GetCollidingObject<EndPoint *>(end_points_);
+
+    if (endpoint->HasNextStage()) {
+      current_level_file_path_ = endpoint->GetNextStageFilePath();
+      LoadAndInitializeLevelEnvironment(endpoint->GetNextStageFilePath(), endpoint->GetNextStageStartPointId());
+      ResetPlayerPosition();
+    } else {
+      win_menu_->Open();
+    }
 
   } else if (player_->IsCollision(walls_) || player_->IsCollision(enemies_)) {
 
@@ -328,10 +316,8 @@ void MultiplayerGameScene::UpdatePlayerStateAndHandleCollisions(uint32_t elapsed
       ResetPlayerPosition();
 
     } else {
-
-      network_client_.SendData(sliding_blocks_networking::PlayerDiedMessage(network_client_.GetClientId())
-                                   .Serialize());
-
+      death_menu_->Open();
+      printf("Player died but no remaining lives; exiting!\n");
     }
 
   } else if (player_->IsCollision(slick_floors_)) {
