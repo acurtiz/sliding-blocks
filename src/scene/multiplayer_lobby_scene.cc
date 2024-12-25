@@ -5,8 +5,6 @@
 #include "scene/multiplayer_game_scene.h"
 #include "game/game_component.h"
 #include "game/scene_executor.h"
-#include "message/network_message.h"
-#include "message/initialization_begin_message.h"
 
 namespace sliding_blocks {
 
@@ -99,13 +97,10 @@ void MultiplayerLobbyScene::RunSingleIterationEventHandler(SDL_Event &event) {
 
 void MultiplayerLobbyScene::HandleReceivedData(const std::string &data) {
 
-  printf("MultiplayerLobbyScene: Received data [%s]\n", data.c_str());
+  printf("MPLobby: Received data [%s]\n", data.c_str());
 
-  auto *message = sliding_blocks_networking::NetworkMessage::DeserializeAny(data);
-
-  auto *initialization_begin_msg = dynamic_cast<const sliding_blocks_networking::InitializationBeginMessage *>(message);
-  if (initialization_begin_msg != nullptr) {
-    network_client_.SetClientId(initialization_begin_msg->GetClientId());
+  if (data == "LOAD_GAME") {
+    printf("Received LOAD_GAME signal\n");
     scene_executor_.SwitchScene(typeid(MultiplayerGameScene));
   }
 
@@ -128,7 +123,6 @@ void MultiplayerLobbyScene::RunSingleIterationLoopBody() {
 
 void MultiplayerLobbyScene::PreSwitchHook() {
   network_client_.RegisterHandler(*this);
-  network_client_.ResetClientId();
 }
 
 void MultiplayerLobbyScene::PostSwitchHook() {

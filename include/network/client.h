@@ -17,15 +17,11 @@ class NetworkClient {
   void SendData(std::string data);
   void RegisterHandler(Handler &handler);
   void DeregisterHandler();
-  void SetClientId(int client_id);
-  int GetClientId() const;
-  void ResetClientId();
 
  private:
   ENetHost *client_;
   ENetPeer *connected_peer_;
   Handler *handler_;
-  int client_id_;
 
 };
 
