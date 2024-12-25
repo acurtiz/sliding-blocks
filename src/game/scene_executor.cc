@@ -3,8 +3,6 @@
 #include "game/scene_executor.h"
 #include "scene/game_scene.h"
 #include "scene/title_scene.h"
-#include "scene/multiplayer_lobby_scene.h"
-#include "scene/multiplayer_game_scene.h"
 
 namespace sliding_blocks {
 
@@ -80,12 +78,8 @@ void SceneExecutor::LoadScenes() {
 
   auto *title_scene = new TitleScene(*this, *this);
   auto *game_scene = new GameScene(*this, *this);
-  auto *multiplayer_lobby_scene = new MultiplayerLobbyScene(*this, *this);
-  auto *multiplayer_game_scene = new MultiplayerGameScene(*this, *this);
   type_to_scene_map_[typeid(TitleScene)] = title_scene;
   type_to_scene_map_[typeid(GameScene)] = game_scene;
-  type_to_scene_map_[typeid(MultiplayerLobbyScene)] = multiplayer_lobby_scene;
-  type_to_scene_map_[typeid(MultiplayerGameScene)] = multiplayer_game_scene;
 
 }
 

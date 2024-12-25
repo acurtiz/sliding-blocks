@@ -29,14 +29,11 @@ find_library(SDL2_TTF_LIBRARY
         HINTS /Library/Frameworks)
 target_link_libraries(SlidingBlocks LINK_PUBLIC ${SDL2_TTF_LIBRARY})
 
-# Link to Enet
-find_library(ENET_LIBRARY
-        Names ENet
-        HINTS /usr/local/lib)
-find_path(ENET_INCLUDE_DIR
-        enet/enet.h)
-include_directories(${ENET_INCLUDE_DIR})
-target_link_libraries(SlidingBlocks LINK_PUBLIC ${ENET_LIBRARY})
+# Link to SDL2_net library
+find_library(SDL2_NET_LIBRARY
+        NAMES SDL2_net
+        HINTS /Library/Frameworks)
+target_link_libraries(SlidingBlocks LINK_PUBLIC ${SDL2_NET_LIBRARY})
 
 # Include Boost
 set(BOOST_HEADER_DIRECTORY /Users/alex/Libraries/boost_1_76_0)
