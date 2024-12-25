@@ -122,7 +122,7 @@ void MultiplayerGameScene::RunSingleIterationLoopBody() {
   for (StartPoint *start_point: start_points_) start_point->Render();
   for (EndPoint *end_point: end_points_) end_point->Render();
   for (Enemy *enemy: enemies_) enemy->Render();
-  for (auto kv: non_controlled_players_) kv.second.Render();
+  for (auto kv: non_controlled_players_) kv.second->Render();
   player_->Render();
 
   remaining_lives_text_->Render();
@@ -151,12 +151,8 @@ void MultiplayerGameScene::HandleReceivedData(const std::string &data) {
 
     printf("Instantiating non-player character (client %d)\n", initialize_player_message->GetClientId());
     non_controlled_players_.erase(initialize_player_message->GetClientId());
-    non_controlled_players_.emplace(initialize_player_message->GetClientId(),
-                                    NonControlledPlayer(*this,
-                                                        10,
-                                                        10,
-                                                        initialize_player_message->GetX(),
-                                                        initialize_player_message->GetY()));
+    non_controlled_players_[initialize_player_message->GetClientId()] =
+        new NonControlledPlayer(*this, 10, 10, initialize_player_message->GetX(), initialize_player_message->GetY());
 
     // We consider initialization complete as soon as a single non controlled player is instantiated; tell the server
     network_client_.SendData(sliding_blocks_networking::InitializationEndMessage().Serialize());
@@ -175,8 +171,8 @@ void MultiplayerGameScene::HandleReceivedData(const std::string &data) {
       printf("ERROR: received player position message for self\n");
       return;
     }
-    non_controlled_players_.at(player_position_message->GetClientId()).SetTopLeftPosition(player_position_message->GetX(),
-                                                                                          player_position_message->GetY());
+    non_controlled_players_[player_position_message->GetClientId()]->SetTopLeftPosition(player_position_message->GetX(),
+                                                                                        player_position_message->GetY());
   }
 
 }
@@ -227,6 +223,7 @@ void MultiplayerGameScene::FreeLevelState() {
   level_loader_.FreeAll();
   start_point_id_to_obj_.clear();
   end_point_id_to_obj_.clear();
+  non_controlled_players_.clear();
 
 }
 
