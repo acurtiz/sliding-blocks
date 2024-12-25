@@ -2,7 +2,6 @@
 #define SLIDINGBLOCKS_INCLUDE_NETWORK_CLIENT_H_
 
 #include <enet/enet.h>
-#include "handler.h"
 
 namespace sliding_blocks {
 
@@ -15,13 +14,10 @@ class NetworkClient {
   bool Connect(std::string hostname, int port);
   void Disconnect();
   void SendData(std::string data);
-  void RegisterHandler(Handler &handler);
-  void DeregisterHandler();
 
  private:
   ENetHost *client_;
   ENetPeer *connected_peer_;
-  Handler *handler_;
 
 };
 
