@@ -23,7 +23,6 @@
 #include "game/scene_executor.h"
 #include "network/client.h"
 #include "network/handler.h"
-#include "player/non_controlled_player.h"
 
 namespace sliding_blocks {
 
@@ -57,7 +56,6 @@ class MultiplayerGameScene : public Scene, public Handler {
   std::vector<StartPoint *> start_points_;
   std::vector<EndPoint *> end_points_;
   std::vector<Enemy *> enemies_;
-  std::vector<NonControlledPlayer *> non_controlled_players_;
 
   std::map<int, StartPoint *> start_point_id_to_obj_;
   std::map<int, EndPoint *> end_point_id_to_obj_;
