@@ -80,7 +80,8 @@ void MultiplayerLobbyScene::RunSingleIterationEventHandler(SDL_Event &event) {
 
   if (connect_button_->HandleEvent(&event) == PRESSED) {
     network_client_->Connect("localhost", 1337);
-    //network_client_->SendData("join");
+    network_client_->SendData();
+    printf("Successfully connected\n");
   }
 
   if (start_button_->HandleEvent(&event) == PRESSED) {
@@ -97,8 +98,6 @@ void MultiplayerLobbyScene::RunSingleIterationLoopBody() {
 
   SDL_SetRenderDrawColor(GetRenderer(), 0x00, 0x00, 0x00, 0xFF);
   SDL_RenderClear(GetRenderer());
-
-  network_client_->CheckHostService();
 
   title_->Render();
   connect_button_->Render();
