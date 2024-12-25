@@ -83,6 +83,7 @@ void MultiplayerLobbyScene::RunSingleIterationEventHandler(SDL_Event &event) {
 
   if (connect_button_->HandleEvent(&event) == PRESSED) {
     network_client_.Connect("localhost", 1337);
+    network_client_.SendData("join");
   }
 
   if (start_button_->HandleEvent(&event) == PRESSED) {
@@ -99,8 +100,8 @@ void MultiplayerLobbyScene::HandleReceivedData(const std::string &data) {
 
   printf("MPLobby: Received data [%s]\n", data.c_str());
 
-  if (data == "LOAD_GAME") {
-    printf("Received LOAD_GAME signal\n");
+  if (data == "READY") {
+    printf("Received ready signal. Switching to game.");
     scene_executor_.SwitchScene(typeid(MultiplayerGameScene));
   }
 
