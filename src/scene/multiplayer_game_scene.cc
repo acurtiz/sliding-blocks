@@ -11,7 +11,6 @@
 #include "enemy/straight_moving_enemy.h"
 #include "network/client.h"
 #include "message/player_position_message.h"
-#include "message/initialize_player_message.h"
 
 namespace sliding_blocks {
 
@@ -117,7 +116,7 @@ void MultiplayerGameScene::RunSingleIterationLoopBody() {
   for (StartPoint *start_point: start_points_) start_point->Render();
   for (EndPoint *end_point: end_points_) end_point->Render();
   for (Enemy *enemy: enemies_) enemy->Render();
-  for (auto kv: non_controlled_players_) kv.second->Render();
+  for (NonControlledPlayer *non_controlled_player: non_controlled_players_) non_controlled_player->Render();
   player_->Render();
 
   remaining_lives_text_->Render();
@@ -133,30 +132,17 @@ void MultiplayerGameScene::RunSingleIterationLoopBody() {
 void MultiplayerGameScene::HandleReceivedData(const std::string &data) {
 
   printf("HandleReceivedData [%s]\n", data.c_str());
-
-  auto *message = sliding_blocks_networking::NetworkMessage::DeserializeAny(data);
-
-  auto *initialize_player_message = dynamic_cast<const sliding_blocks_networking::InitializePlayerMessage *>(message);
-  if (initialize_player_message != nullptr) {
-    non_controlled_players_.erase(initialize_player_message->GetClientId());
-    non_controlled_players_[initialize_player_message->GetClientId()] =
-        new NonControlledPlayer(*this, 10, 10, initialize_player_message->GetX(), initialize_player_message->GetY());
-  }
-
-  if (non_controlled_players_.empty()) {
-    printf("Waiting on player initialization message\n");
-    return;
-  }
-
   if (!run_game_ && data == "START_COUNTDOWN") {
     run_game_ = true;
     return;
   }
 
-  auto *player_position_message = dynamic_cast<const sliding_blocks_networking::PlayerPositionMessage *>(message);
-  if (player_position_message != nullptr) {
-    non_controlled_players_[player_position_message->GetClientId()]->SetTopLeftPosition(player_position_message->GetX(),
-                                                                                        player_position_message->GetY());
+  auto *message = sliding_blocks_networking::NetworkMessage::DeserializeAny(data);
+
+  auto *tmp = dynamic_cast<const sliding_blocks_networking::PlayerPositionMessage *>(message);
+  if (tmp != nullptr) {
+    printf("Casted!\n");
+    non_controlled_players_[0]->SetTopLeftPosition(tmp->GetX(), tmp->GetY());
   }
 
 }
@@ -192,6 +178,9 @@ void MultiplayerGameScene::ResetPlayerLivesAndPosition() {
                        start_point_id_to_obj_[current_level_start_point_id_]->GetTopLeftX(),
                        start_point_id_to_obj_[current_level_start_point_id_]->GetTopLeftY());
   SetPlayerLives(player_->GetLives());
+
+  non_controlled_players_.clear();
+  non_controlled_players_.push_back(new NonControlledPlayer(*this, 10, 10, -1, -1));
 
 }
 
