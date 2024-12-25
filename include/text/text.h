@@ -2,7 +2,7 @@
 #define SLIDINGBLOCKS_INCLUDE_TEXT_TEXT_H_
 
 #include <SDL2/SDL.h>
-#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include <string>
 #include "shape/rectangle.h"
 

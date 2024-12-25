@@ -1,4 +1,4 @@
-#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include <boost/format.hpp>
 #include <utility>
 #include "pop_up_menu/win_menu.h"

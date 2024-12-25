@@ -3,3 +3,4 @@
 build/
 SlidingBlocks
 .DS_Store
+*.exe

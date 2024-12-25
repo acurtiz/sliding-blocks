@@ -1,4 +1,4 @@
-#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include <boost/format.hpp>
 #include "scene/title_scene.h"
 #include "scene/game_scene.h"

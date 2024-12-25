@@ -17,18 +17,11 @@ add_custom_target(copy_assets
         )
 add_dependencies(SlidingBlocks copy_assets)
 
-# Link to SDL2 library
-find_library(SDL2_LIBRARY
-        NAMES SDL2
-        HINTS /Library/Frameworks)
-target_link_libraries(SlidingBlocks LINK_PUBLIC ${SDL2_LIBRARY})
+# SDL2: Link to libraries & include necessary headers.
+find_package(SDL2 REQUIRED)
+find_package(SDL2_TTF REQUIRED)
+target_link_libraries(SlidingBlocks PUBLIC SDL2::SDL2 SDL2_ttf::SDL2_ttf)
 
-# Link to SDL2_ttf library
-find_library(SDL2_TTF_LIBRARY
-        NAMES SDL2_ttf
-        HINTS /Library/Frameworks)
-target_link_libraries(SlidingBlocks LINK_PUBLIC ${SDL2_TTF_LIBRARY})
-
-# Include Boost
-set(BOOST_HEADER_DIRECTORY /Users/alex/Libraries/boost_1_76_0)
-include_directories(${BOOST_HEADER_DIRECTORY})
+# Boost: Include necessary headers.
+find_package(Boost REQUIRED COMPONENTS format)
+include_directories(${Boost_INCLUDE_DIRS})

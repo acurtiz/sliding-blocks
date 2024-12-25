@@ -2,7 +2,7 @@
 #define SLIDINGBLOCKS_INCLUDE_POP_UP_MENU_DEATH_MENU_H_
 
 #include <functional>
-#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include "pop_up_menu/pop_up_menu.h"
 #include "button/rectangular_button.h"
 #include "text/text.h"

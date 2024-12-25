@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include <boost/format.hpp>
 #include "game/game.h"
 #include "game/game_component.h"

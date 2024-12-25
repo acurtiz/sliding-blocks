@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include <SDL2/SDL.h>
-#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include "scene/scene.h"
 #include "player/player.h"
 #include "environment/surface.h"
